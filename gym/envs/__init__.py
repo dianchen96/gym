@@ -255,6 +255,16 @@ register(
     max_episode_steps=1000,
 )
 
+# Custom Mujoco
+# ----------------------------------------
+
+register(
+    id='Surprise-v1',
+    entry_point='gym.envs.mujoco:SurpriseEnv',
+    max_episode_steps=1000,
+)
+
+
 # Atari
 # ----------------------------------------
 
