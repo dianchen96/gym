@@ -259,8 +259,8 @@ register(
 # ----------------------------------------
 
 register(
-    id='Surprise-v1',
-    entry_point='gym.envs.mujoco:SurpriseEnv',
+    id='Box3dReach-v0',
+    entry_point='gym.envs.mujoco:Box3dReachEnv',
     max_episode_steps=1000,
 )
 
