@@ -264,6 +264,12 @@ register(
     max_episode_steps=100,
 )
 
+register(
+    id='Box3dGrasp-v0',
+    entry_point='gym.envs.mujoco:Box3dGraspEnv',
+    max_episode_steps=200,
+)
+
 
 # Atari
 # ----------------------------------------
