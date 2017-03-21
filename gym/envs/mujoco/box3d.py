@@ -23,9 +23,6 @@ class Box3dReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             if con.geom1 != 0 and con.geom2 == 12:
                 # Small box is touched but not by table
                 contact_reward = 1.0
-            # if con.geom1 == 0 and con.geom2 != 12 and con.geom2 != 13:
-            #     # Table is touched but not by small box
-            #     done = True
         
         reward = contact_reward
 
