@@ -6,7 +6,6 @@ class Box3dReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
         mujoco_env.MujocoEnv.__init__(self, 'arm_claw.xml', 4)
         utils.EzPickle.__init__(self)
-        print self.init_qpos
 
 
     def _step(self, a):
@@ -54,8 +53,6 @@ class Box3dGraspEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
         mujoco_env.MujocoEnv.__init__(self, 'arm_claw.xml', 4)
         utils.EzPickle.__init__(self)
-
-        print self.model.data.qpos
 
 
     def _step(self, a):
