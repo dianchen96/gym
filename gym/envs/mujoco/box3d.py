@@ -11,10 +11,25 @@ class Box3dReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def _step(self, a):
         self.do_simulation(a, self.frame_skip)
         
-        ob = self._get_obs()
-        reward = 0
+        obs = self._get_obs()
         done = False
-        return ob, reward, done, None
+        
+        contact_reward = 0.0
+
+        # Check for contact
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if con.geom1 != 0 and con.geom2 == 12:
+                # Small box is touched but not by table
+                contact_reward = 1.0
+            if con.geom1 == 0 and con.geom2 != 12 and con.geom2 != 13:
+                # Table is touched but not by small box
+                done = True
+        
+        reward = contact_reward
+
+        return obs, reward, done, dict(reward_contact=contact_reward)
 
     def viewer_setup(self):
         self.viewer.cam.trackbodyid = 1
