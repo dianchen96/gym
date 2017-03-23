@@ -74,7 +74,7 @@ class Box3dGraspEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
                 box_height = self.model.data.qpos[11] - 0.025
                 if box_height > 0:
-                    grasp_reward = box_height * 100.0
+                    grasp_reward = box_height * 20.0
         
         reward = contact_reward + grasp_reward
 
