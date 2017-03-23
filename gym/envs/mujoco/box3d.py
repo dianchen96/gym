@@ -7,6 +7,8 @@ class Box3dReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
         mujoco_env.MujocoEnv.__init__(self, 'arm_claw.xml', 4)
         utils.EzPickle.__init__(self)
+        
+        self._randomize_box()
 
 
     def _randomize_box(self):
