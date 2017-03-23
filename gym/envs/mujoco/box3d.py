@@ -1,11 +1,21 @@
 import numpy as np
 from gym import utils
 from gym.envs.mujoco import mujoco_env
+import mujoco_py.mjlib
 
 class Box3dReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
         mujoco_env.MujocoEnv.__init__(self, 'arm_claw.xml', 4)
         utils.EzPickle.__init__(self)
+
+
+    def _randomize_box(self):
+        state_noise = np.zeros(16)
+        state_noise[9:11] = self.np_random.uniform(low=-0.1, high=0.1, size=2)
+        self.set_state(
+                self.model.data.qpos.ravel() + state_noise,
+                self.model.data.qvel.ravel(),
+        )
 
 
     def _step(self, a):
@@ -29,7 +39,10 @@ class Box3dReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return obs, reward, done, dict(reward_contact=contact_reward)
 
     def viewer_setup(self):
-        # self.viewer.cam.trackbodyid = 0
+        # print self.viewer.cam.mode
+        # print type(self.viewer.cam)
+        # mujoco_py.mjlib.mjv_defaultCamera(ctypes.byref(cam))
+        self.viewer.cam.trackbodyid = 0
         self.viewer.cam.distance = self.model.stat.extent * 2.5
         self.viewer.cam.elevation += 20
 
@@ -40,6 +53,7 @@ class Box3dReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             self.init_qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
             self.init_qvel + self.np_random.uniform(low=-c, high=c, size=self.model.nv,)
         )
+        self._randomize_box()
         return self._get_obs()
 
     def _get_obs(self):
@@ -70,11 +84,9 @@ class Box3dGraspEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             con = d.obj.contact[coni]
             if con.geom1 != 0 and con.geom2 == 12:
                 # Small box is touched but not by table
-                contact_reward = 1.0
-
                 box_height = self.model.data.qpos[11] - 0.025
-                if box_height > 0:
-                    grasp_reward = box_height * 20.0
+                if box_height > 0.05:
+                    grasp_reward = 1.0
         
         reward = contact_reward + grasp_reward
 
