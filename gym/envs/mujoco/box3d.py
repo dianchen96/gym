@@ -41,9 +41,6 @@ class Box3dReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return obs, reward, done, dict(reward_contact=contact_reward)
 
     def viewer_setup(self):
-        # print self.viewer.cam.mode
-        # print type(self.viewer.cam)
-        # mujoco_py.mjlib.mjv_defaultCamera(ctypes.byref(cam))
         self.viewer.cam.trackbodyid = -1
         self.viewer.cam.distance = self.model.stat.extent * 2.5
         self.viewer.cam.elevation = -40
