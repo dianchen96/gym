@@ -44,9 +44,9 @@ class Box3dReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # print self.viewer.cam.mode
         # print type(self.viewer.cam)
         # mujoco_py.mjlib.mjv_defaultCamera(ctypes.byref(cam))
-        self.viewer.cam.trackbodyid = 0
+        self.viewer.cam.trackbodyid = -1
         self.viewer.cam.distance = self.model.stat.extent * 2.5
-        self.viewer.cam.elevation += 20
+        self.viewer.cam.elevation = -40
 
 
     def reset_model(self):
@@ -95,9 +95,9 @@ class Box3dGraspEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return obs, reward, done, dict(reward_contact=contact_reward, reward_grasp=grasp_reward)
 
     def viewer_setup(self):
-        # self.viewer.cam.trackbodyid = 0
+        self.viewer.cam.trackbodyid = -1
         self.viewer.cam.distance = self.model.stat.extent * 2.5
-        self.viewer.cam.elevation += 20
+        self.viewer.cam.elevation = -40
 
 
     def reset_model(self):
