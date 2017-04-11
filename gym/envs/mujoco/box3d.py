@@ -41,7 +41,7 @@ class Box3dReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return obs, reward, done, dict(reward_contact=contact_reward)
 
     def viewer_setup(self):
-        self.viewer.cam.trackbodyid = 0
+        self.viewer.cam.trackbodyid = -1
         self.viewer.cam.distance = self.model.stat.extent * 2.5
         self.viewer.cam.elevation = -40
 
@@ -84,7 +84,7 @@ class Box3dGraspEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             if con.geom1 != 0 and con.geom2 == 12:
                 # Small box is touched but not by table
                 box_height = self.model.data.qpos[11] - 0.025
-                if box_height > 0.05:
+                if box_height > 0.1:
                     grasp_reward = 1.0
         
         reward = contact_reward + grasp_reward
@@ -92,7 +92,7 @@ class Box3dGraspEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return obs, reward, done, dict(reward_contact=contact_reward, reward_grasp=grasp_reward)
 
     def viewer_setup(self):
-        self.viewer.cam.trackbodyid = 0
+        self.viewer.cam.trackbodyid = -1
         self.viewer.cam.distance = self.model.stat.extent * 2.5
         self.viewer.cam.elevation = -40
 
