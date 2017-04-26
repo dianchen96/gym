@@ -13,4 +13,4 @@ from gym.envs.mujoco.swimmer import SwimmerEnv
 from gym.envs.mujoco.humanoidstandup import HumanoidStandupEnv
 
 # Custom environment
-from gym.envs.mujoco.box3d import Box3dReachEnv, Box3dGraspEnv
+from gym.envs.mujoco.box3d import Box3dReachEnv, Box3dGraspEnv, Box3dNoRewardEnv
