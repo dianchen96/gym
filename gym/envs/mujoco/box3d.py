@@ -134,7 +134,7 @@ class Box3dGraspEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             if con.geom1 != 0 and con.geom2 == 12:
                 # Small box is touched but not by table
                 box_height = self.model.data.qpos[11] - 0.025
-                if box_height > 0.05:
+                if box_height > 0.1:
                     grasp_reward = 1.0
         
         reward = contact_reward + grasp_reward
