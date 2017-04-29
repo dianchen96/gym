@@ -21,7 +21,7 @@
 			nuser_geom="1"/>
 
 	<option	timestep="0.001"
-			gravity="0 0 -9.8"
+			gravity="0 0 9.8"
 			viscosity="0"
 			iterations="20"/>
 	
@@ -56,7 +56,7 @@
 		<body name="upperarm" pos="-0.15 0 0.6">
 			<geom class="0" type="capsule" fromto="0 0 0 0 0 -0.345" size="0.05"/>
 			<joint class='arm' name="s_abduction" type="hinge" pos="0 0 0" axis="1 0 0" range="-1.57 .7" user="001"/>
-			<joint class='arm' name="s_flexion" type="hinge" pos="0 0 0" axis="0 -1 0" range="-.85 1.57" user="002"/>
+			<joint class='arm' name="s_flexion" type="hinge" pos="0 0 0" axis="0 -1 0" range="-.85 3.14" user="002"/>
 			<joint class='arm' name="s_rotation" type="hinge" pos="0 0 0" axis="0 0 1" range="-.85 .85" user="003"/>
 			
 			<body name="forearm" pos="0 0 -0.36">
@@ -70,23 +70,7 @@
 					<geom class="1" name="Geomclaw" type="capsule" fromto="0 .02 0 0 -.02 0" size="0.01" />
 					<joint name="w_abduction" type="hinge" pos="0 0 0" axis="0 0 1" range="-.5 .5" user="006"/>
 					<joint name="w_flexion" type="hinge" pos="0 0 0" axis="0 -1 0" range="-1.05 1.05" user="007"/>
-
-					<body name="rightclaw" pos=".01 -.02 0" >
-						<geom name="rightclaw_it" class="1" type="capsule" fromto="0 0 0.015 .03 -.02 0.015" 	size="0.005" />
-						<geom name="rightclaw_ot" class="1" type="capsule" fromto=".03 -.02 0.015 .07 0 0.015" size="0.005" />
-						<geom name="rightclaw_ib" class="1" type="capsule" fromto="0 0 -0.015 .03 -.02 -0.015" 	size="0.005" />
-						<geom name="rightclaw_ob" class="1" type="capsule" fromto=".03 -.02 -0.015 .07 0 -0.015" size="0.005" />
-						<joint name="rc_close" type="hinge" pos="0 0 0" axis="0 0 1" range="-1.05 1.05" user="008"/>
-					</body>
-
-					<body name="leftclaw" pos=".01 .02 0">
-						<geom name="leftclaw_it" class="1" type="capsule" fromto="0 0 0.015 .03 .02 0.015" 	size="0.005" />
-						<geom name="leftclaw_ot" class="1" type="capsule" fromto=".03 .02 0.015 .07 0 0.015" size="0.005" />
-						<geom name="leftclaw_ib" class="1" type="capsule" fromto="0 0 -0.015 .03 .02 -0.015" 	size="0.005" />
-						<geom name="leftclaw_ob" class="1" type="capsule" fromto=".03 .02 -0.015 .07 0 -0.015" size="0.005" />
-						<joint name="lc_close" type="hinge" pos="0 0 0" axis="0 0 1" range="-1.05 1.05" user="009"/>
-					</body>
-					
+					<site name="end_effector" pos="0 0 0" size="0.01"/>
 				</body>
 				
 			</body>
@@ -95,7 +79,10 @@
 		
 		<!--  ================= OBJECT ================= /-->
 		<body name="small_object" pos="0.2 0 0.025">
-			<geom type="box" name="small_box" pos="-0.1 -0.1 0" size="0.025 0.025 0.025" rgba="0.5 0.6 0.8 1" user="1" contype="1" conaffinity="1"/>
+			<geom type="box" name="small_box" pos="-0.1 -0.1 0" size="0.025 0.025 0.025" rgba="0.5 0.6 0.8 1" user="1" contype="0" conaffinity="1"/>
+			<joint armature="0" axis="1 0 0" damping="0" name="target_x" stiffness="0" limited='false' type="slide"/>
+			<joint armature="0" axis="0 1 0" damping="0" name="target_y" stiffness="0" limited='false' type="slide"/>
+			<!-- <joint armature="0" axis="0 0 1" damping="0" name="target_z" stiffness="0" limited='false' type="slide"/> -->
 		</body>
 		<body name="large_object" pos="0.1 0 0.025">
 			<geom type="box" name="large_box" pos="-0.05 0.05 0" size="0.05 0.05 0.05" rgba="0.3 0.8 0.5 1" user="1" contype="1" conaffinity="1"/>
@@ -113,8 +100,8 @@
 		<motor joint='e_pronation' 	name='Ae_pronation' gear="70"/>
 		<motor joint='w_abduction' 	name='Aw_abduction' gear="30"/>
 		<motor joint='w_flexion' 	name='Aw_flexion' 	gear="30"/>
-		<motor joint='rc_close' 	name='Arc_close' 	gear="10"/>
-		<motor joint='lc_close' 	name='Alc_close' 	gear="10"/>
+<!-- 		<motor joint='rc_close' 	name='Arc_close' 	gear="10"/>
+		<motor joint='lc_close' 	name='Alc_close' 	gear="10"/> -->
 		
 		<!--  ================= Position actuators ================= /-->
 <!-- 		<position joint='s_abduction' 	name='As_abduction' kp="100" ctrlrange='-1.57 .7'/>
