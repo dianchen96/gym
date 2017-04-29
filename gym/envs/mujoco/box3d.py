@@ -204,20 +204,20 @@ class Box3dFixedReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             self.model.data.qpos.flat,
             self.model.data.qvel.flat
         ])
+
     def reset_model(self):
         c = 0.01
         self.set_state(
             self.init_qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
             self.init_qvel + self.np_random.uniform(low=-c, high=c, size=self.model.nv,)
         )
-        self._randomize_box()
         return self._get_obs()
 
     def _get_obs(self):
         # return self.model.data.qpos.flat[:9]
         return np.concatenate([
-           self.model.data.qpos.flat[:9],
-           self.model.data.qvel.flat[:9]
+           self.model.data.qpos.flat,
+           self.model.data.qvel.flat
         ])
 
     def viewer_setup(self):
