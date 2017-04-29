@@ -189,7 +189,6 @@ class Box3dFixedReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # Check for distance
         d = self.unwrapped.data
         distance = np.linalg.norm(d.xpos.flatten() - list(d.qpos[-2:]) + [0.025])
-        print (distance)
         if distance <= 0.1:
             reach_reward += 1.0
         reward = reach_reward
