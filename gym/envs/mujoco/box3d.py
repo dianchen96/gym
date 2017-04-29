@@ -177,17 +177,6 @@ class Box3dFixedReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         mujoco_env.MujocoEnv.__init__(self, 'arm_claw_fixed_box.xml', 4)
         utils.EzPickle.__init__(self)
         
-        self._randomize_box()
-
-
-    def _randomize_box(self):
-        state_noise = np.zeros(16)
-        state_noise[9:11] = self.np_random.uniform(low=-0.1, high=0.1, size=2)
-        self.set_state(
-                self.model.data.qpos.ravel() + state_noise,
-                self.model.data.qvel.ravel(),
-        )
-
 
     def _step(self, a):
         self.do_simulation(a, self.frame_skip)
