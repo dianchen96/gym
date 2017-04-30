@@ -185,16 +185,22 @@ class Box3dFixedReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         done = False
         
         reach_reward = 0.0
+        contact_reward = 0.0
 
         # Check for distance
         d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if con.geom1 != 0 and con.geom2 == 12:
+                # Small box is touched but not by table
+                contact_reward = 1.0
         # print (d.site_xpos.flatten())
-        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
-        if distance <= 0.2:
-            reach_reward += 2.0 - distance*3
-        reward = reach_reward
+        # distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
+        # if distance <= 0.2:
+        #     reach_reward += 2.0 - distance*3
+        reward = contact_reward
 
-        return obs, reward, done, dict(reach_reward=reach_reward)
+        return obs, reward, done, dict(reach_reward=reach_reward, contact_reward=contact_reward)
 
 
     def _get_obs(self):
