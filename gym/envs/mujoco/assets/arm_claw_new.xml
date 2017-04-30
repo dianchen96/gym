@@ -21,7 +21,7 @@
 			nuser_geom="1"/>
 
 	<option	timestep="0.001"
-			gravity="0 0 9.8"
+			gravity="0 0 0"
 			viscosity="0"
 			iterations="20"/>
 	

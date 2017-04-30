@@ -206,8 +206,7 @@ class Box3dFixedReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         c = 0.01
         qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
         self.set_state(
-            self.init_qpos,
-            # qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
+            qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
             self.init_qvel,
         )
         return self._get_obs()
