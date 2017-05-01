@@ -285,7 +285,7 @@ register(
 register(
     id='Box3dNoReward-v0',
     entry_point='gym.envs.mujoco:Box3dNoRewardEnv',
-    max_episode_steps=1000,
+    max_episode_steps=200,
 )
 
 # Atari
