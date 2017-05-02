@@ -1,6 +1,7 @@
 import numpy as np
 from gym import utils
 from gym.envs.mujoco import mujoco_env
+from gym.spaces.box import Box
 import mujoco_py.mjlib
 
 
@@ -9,6 +10,7 @@ class Box3dFixedReachEnvPixel(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
         mujoco_env.MujocoEnv.__init__(self, 'arm_claw_new.xml', 4)
         utils.EzPickle.__init__(self)
+        self.observation_space = Box(low=0, high=255, shape=(3, 500, 500))
         
     def _step(self, a):
         self.do_simulation(a, self.frame_skip)
@@ -42,7 +44,7 @@ class Box3dFixedReachEnvPixel(mujoco_env.MujocoEnv, utils.EzPickle):
         # camera2_output =  np.fromstring(data, dtype='uint8').reshape(height, width, 3)[::-1, :, :]
         # return np.concatenate((self._render(mode="rgb_array"), camera2_output), axis = 2)
         obs = self._render(mode="rgb_array")
-        return obs
+        return np.transpose(obs, axes=(1,2,0))
 
     def reset_model(self):
         c = 0.01
