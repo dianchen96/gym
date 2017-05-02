@@ -145,3 +145,5 @@ class MujocoEnv(gym.Env):
             self.model.data.qpos.flat,
             self.model.data.qvel.flat
         ])
+    def camera2_setup(self):
+        pass
