@@ -36,11 +36,13 @@ class Box3dFixedReachEnvPixel(mujoco_env.MujocoEnv, utils.EzPickle):
 
 
     def _get_obs(self):
-        camera2_output = None
-        self.camera2.render()
-        data, width, height = self.camera2.get_image()
-        camera2_output =  np.fromstring(data, dtype='uint8').reshape(height, width, 3)[::-1, :, :]
-        return np.concatenate((self._render(mode="rgb_array"), camera2_output), axis = 2)
+        # camera2_output = None
+        # self.camera2.render()
+        # data, width, height = self.camera2.get_image()
+        # camera2_output =  np.fromstring(data, dtype='uint8').reshape(height, width, 3)[::-1, :, :]
+        # return np.concatenate((self._render(mode="rgb_array"), camera2_output), axis = 2)
+        obs = self._render(mode="rgb_array")
+        return obs
 
     def reset_model(self):
         c = 0.01
