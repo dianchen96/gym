@@ -267,7 +267,8 @@ class Box3dFixedReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
         if distance <= 0.4:
             reach_reward += 2.0 - distance*3
-        reward = reach_reward
+
+        reward = contact_reward + reach_reward
 
         return obs, reward, done, dict(reach_reward=reach_reward, contact_reward=contact_reward)
 
