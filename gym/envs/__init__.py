@@ -259,6 +259,12 @@ register(
 # ----------------------------------------
 
 register(
+    id="Box3dReachPixel-v0",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixel",
+    max_episode_steps=200,
+)
+
+register(
     id="Box3dReach-v2",
     entry_point="gym.envs.mujoco:Box3dFixedReachEnv",
     max_episode_steps=200,
