@@ -29,12 +29,12 @@ class MujocoEnv(gym.Env):
         self.data = self.model.data
         self.viewer = None
         
-        self.camera2 = None
-        #import pdb; pdb.set_trace()
-        self.camera2 = mujoco_py.MjViewer(init_width=500, init_height=500)
-        self.camera2.start()
-        self.camera2.set_model(self.model)
-        self.camera2_setup()
+        # self.camera2 = None
+        # #import pdb; pdb.set_trace()
+        # self.camera2 = mujoco_py.MjViewer(init_width=500, init_height=500)
+        # self.camera2.start()
+        # self.camera2.set_model(self.model)
+        # self.camera2_setup()
         
         self.metadata = {
             'render.modes': ['human', 'rgb_array'],
