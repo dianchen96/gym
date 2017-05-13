@@ -260,13 +260,25 @@ register(
 
 register(
     id="Box3dReachPixel-v0",
-    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixel",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGrey",
+    max_episode_steps=200,
+)
+
+register(
+    id="Box3dReachPixel-v1",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelRGB",
     max_episode_steps=200,
 )
 
 register(
     id="Box3dReach-v4",
     entry_point="gym.envs.mujoco:Box3dFixedReachHarderEnv",
+    max_episode_steps=200,
+)
+
+register(
+    id="Box3dReach-v5",
+    entry_point="gym.envs.mujoco:Box3dFixedReachHardestEnv",
     max_episode_steps=200,
 )
 

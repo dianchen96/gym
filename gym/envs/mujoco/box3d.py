@@ -6,12 +6,16 @@ import mujoco_py.mjlib
 
 
 
-class Box3dFixedReachEnvPixel(mujoco_env.MujocoEnv, utils.EzPickle):
-    def __init__(self):
+class Box3dFixedReachEnvPixelGrey(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self, width=42, height=42):
+        self.width = width
+        self.height = height
+
         mujoco_env.MujocoEnv.__init__(self, 'arm_claw_new.xml', 4)
         utils.EzPickle.__init__(self)
-        self.observation_space = Box(low=0, high=255, shape=(3, 500, 500))
-        
+
+        self.observation_space = Box(low=0, high=255, shape=(1, width, height))
+
     def _step(self, a):
         self.do_simulation(a, self.frame_skip)
         
@@ -23,12 +27,6 @@ class Box3dFixedReachEnvPixel(mujoco_env.MujocoEnv, utils.EzPickle):
 
         # Check for distance
         d = self.unwrapped.data
-        # for coni in range(d.ncon):
-        #     con = d.obj.contact[coni]
-        #     if con.geom1 != 0 and con.geom2 == 12:
-        #         # Small box is touched but not by table
-        #         contact_reward = 1.0
-        # print (d.site_xpos.flatten())
         distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
         if distance <= 0.4:
             reach_reward += 2.0 - distance*3
@@ -44,7 +42,8 @@ class Box3dFixedReachEnvPixel(mujoco_env.MujocoEnv, utils.EzPickle):
         # camera2_output =  np.fromstring(data, dtype='uint8').reshape(height, width, 3)[::-1, :, :]
         # return np.concatenate((self._render(mode="rgb_array"), camera2_output), axis = 2)
         obs = self._render(mode="rgb_array")
-        return np.transpose(obs, axes=(1,2,0))
+        obs_grey = obs.mean(axis=2)[:,:,np.newaxis]
+        return np.transpose(obs_grey, axes=(2,1,0))
 
     def reset_model(self):
         c = 0.01
@@ -57,7 +56,7 @@ class Box3dFixedReachEnvPixel(mujoco_env.MujocoEnv, utils.EzPickle):
     
     def _get_viewer(self):
         if self.viewer is None:
-            self.viewer = mujoco_py.MjViewer(init_width=500, init_height=500)
+            self.viewer = mujoco_py.MjViewer(init_width=self.width, init_height=self.height)
             self.viewer.start()
             self.viewer.set_model(self.model)
             self.viewer_setup()
@@ -78,6 +77,74 @@ class Box3dFixedReachEnvPixel(mujoco_env.MujocoEnv, utils.EzPickle):
         self.camera2.cam.lookat[2] += 0
         
         
+class Box3dFixedReachEnvPixelRGB(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self, width=42, height=42):
+        self.width = width
+        self.height = height
+
+        mujoco_env.MujocoEnv.__init__(self, 'arm_claw_new.xml', 4)
+        utils.EzPickle.__init__(self)
+
+        self.observation_space = Box(low=0, high=255, shape=(3, width, height))
+
+    def _step(self, a):
+        self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+        done = False
+        
+        reach_reward = 0.0
+        contact_reward = 0.0
+
+        # Check for distance
+        d = self.unwrapped.data
+        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
+        if distance <= 0.4:
+            reach_reward += 2.0 - distance*3
+        reward = reach_reward
+
+        return obs, reward, done, dict(reach_reward=reach_reward, contact_reward=contact_reward)
+
+
+    def _get_obs(self):
+        # camera2_output = None
+        # self.camera2.render()
+        # data, width, height = self.camera2.get_image()
+        # camera2_output =  np.fromstring(data, dtype='uint8').reshape(height, width, 3)[::-1, :, :]
+        # return np.concatenate((self._render(mode="rgb_array"), camera2_output), axis = 2)
+        obs = self._render(mode="rgb_array")
+        return np.transpose(obs, axes=(2,1,0))
+
+    def reset_model(self):
+        c = 0.01
+        qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
+        self.set_state(
+            qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
+            self.init_qvel,
+        )
+        return self._get_obs()
+    
+    def _get_viewer(self):
+        if self.viewer is None:
+            self.viewer = mujoco_py.MjViewer(init_width=self.width, init_height=self.height)
+            self.viewer.start()
+            self.viewer.set_model(self.model)
+            self.viewer_setup()
+        return self.viewer
+    
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 2.5*1.4
+        self.viewer.cam.elevation = -40
+        self.viewer.cam.lookat[1]+=0.3
+        
+    def camera2_setup(self):
+        self.camera2.cam.trackbodyid = -1
+        self.camera2.cam.distance = self.model.stat.extent * 2.5*1.4
+        self.camera2.cam.elevation = -30
+        self.camera2.cam.lookat[0] += 0.4
+        self.camera2.cam.lookat[1] += 0.3
+        self.camera2.cam.lookat[2] += 0
 
 class Box3dNoRewardEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
@@ -426,6 +493,70 @@ class Box3dFixedReachHarderEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.viewer.cam.trackbodyid = -1
         self.viewer.cam.distance = self.model.stat.extent * 2.5
         self.viewer.cam.elevation = -40
+
+
+     
+
+
+class Box3dFixedReachHardestEnv(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self):
+        mujoco_env.MujocoEnv.__init__(self, 'arm_claw_new.xml', 4)
+        utils.EzPickle.__init__(self)
+        
+
+    def _step(self, a):
+        self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+        done = False
+        
+        reach_reward = 0.0
+        contact_reward = 0.0
+
+        # Check for distance
+        d = self.unwrapped.data
+        # for coni in range(d.ncon):
+        #     con = d.obj.contact[coni]
+        #     if con.geom1 != 0 and con.geom2 == 12:
+        #         # Small box is touched but not by table
+        #         contact_reward = 1.0
+        # print (d.site_xpos.flatten())
+        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
+        if distance <= 0.05:
+            reach_reward += 1.0 - distance*3
+
+        reward = contact_reward + reach_reward
+
+        return obs, reward, done, dict(reach_reward=reach_reward, contact_reward=contact_reward)
+
+
+    def _get_obs(self):
+        return np.concatenate([
+            self.model.data.qpos.flat,
+            self.model.data.qvel.flat
+        ])
+
+    def reset_model(self):
+        c = 0.01
+        qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
+        self.set_state(
+            qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
+            self.init_qvel,
+        )
+        return self._get_obs()
+
+    def _get_obs(self):
+        # return self.model.data.qpos.flat[:9]
+        return np.concatenate([
+           self.model.data.qpos.flat,
+           self.model.data.qvel.flat
+        ])
+
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 2.5
+        self.viewer.cam.elevation = -40
+
 
 class Box3dGraspEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
