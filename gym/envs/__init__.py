@@ -271,6 +271,12 @@ register(
 )
 
 register(
+    id="Box3dReach-v6",
+    entry_point="gym.envs.mujoco:Box3dFixedReachMulObjEnv",
+    max_episode_steps=1000,
+)
+
+register(
     id="Box3dReach-v4",
     entry_point="gym.envs.mujoco:Box3dFixedReachHarderEnv",
     max_episode_steps=200,
