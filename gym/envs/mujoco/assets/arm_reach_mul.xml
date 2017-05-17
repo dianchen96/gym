@@ -14,7 +14,7 @@
 		Last edits 	: 30Apr16, 30Nov'15, 5Nov'15
 ====================================================== -->
 <mujoco model="arm_claw (v1.31)">
-	<compiler 	inertiafromgeom="true"
+	<compiler 	inertiafromgeom="auto"
 				angle="radian"/>
 			
 	<size 	nuser_jnt="1"
@@ -79,18 +79,18 @@
 		
 		<!--  ================= OBJECT ================= /-->
 		<body name="a_object" pos="0.2 0 0.175">
-			<inertial pos="0 0 0" mass="10000" diaginertia="166667 166667 166667"/>
-			<geom friction=".8 .1 .1" density="300" type="box" name="a_box" pos="-0.1 -0.1 0" size="0.025 0.025 0.025" rgba="0.5 0.6 0.8 1" user="1" contype="0" conaffinity="1"/>
+<!-- 			<inertial pos="0 0 0" mass="10" diaginertia="166.667 166.667 166.667"/> -->
+			<geom density="1e5" type="box" name="a_box" pos="-0.1 -0.1 0" size="0.025 0.025 0.025" rgba="0.5 0.6 0.8 1" user="1" contype="0" conaffinity="1"/>
 			<joint name="a_obj" type="free" limited='false' damping="0" armature="0"/>
 		</body>
 		<body name="b_object" pos="0.1 0 0.175">
-			<inertial pos="0 0 0" mass="10000" diaginertia="166667 166667 166667"/>
-			<geom friction=".8 .1 .1" density="300" type="box" name="b_box" pos="-0.05 0.05 0" size="0.05 0.05 0.05" rgba="0.3 0.8 0.5 1" user="1" contype="1" conaffinity="1"/>
+<!-- 			<inertial pos="0 0 0" mass="10" diaginertia="166.667 166.667 166.667"/> -->
+			<geom density="1e5" type="box" name="b_box" pos="-0.05 0.05 0" size="0.05 0.05 0.05" rgba="0.3 0.8 0.5 1" user="1" contype="1" conaffinity="1"/>
 			<joint name="b_obj" type="free" limited='false' damping="0" armature="0"/>
 		</body>
 		<body name="c_object" pos="0.05 0.05 0.175">
-			<inertial pos="0 0 0" mass="10000" diaginertia="166667 166667 166667"/>
-			<geom friction=".8 .1 .1" density="300" type="box" name="c_box" pos="-0.05 0.05 0" size="0.03 0.03 0.03" rgba="0.8 0.3 0.5 1" user="1" contype="1" conaffinity="1"/>
+<!-- 			<inertial pos="0 0 0" mass="10" diaginertia="166.667 166.667 166.67"/> -->
+			<geom density="1e5" type="box" name="c_box" pos="-0.05 0.05 0" size="0.03 0.03 0.03" rgba="0.8 0.3 0.5 1" user="1" contype="1" conaffinity="1"/>
 			<joint name="c_obj" type="free" limited='false' damping="0" armature="0"/>
 		</body>
 	
