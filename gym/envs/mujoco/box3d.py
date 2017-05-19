@@ -14,7 +14,7 @@ class Box3dFixedReachEnvPixelGrey(mujoco_env.MujocoEnv, utils.EzPickle):
         mujoco_env.MujocoEnv.__init__(self, 'arm_claw_new.xml', 4)
         utils.EzPickle.__init__(self)
 
-        self.observation_space = Box(low=0, high=255, shape=(1, width, height))
+        self.observation_space = Box(low=0, high=255, shape=(width, height, 1))
 
     def _step(self, a):
         self.do_simulation(a, self.frame_skip)
@@ -42,8 +42,9 @@ class Box3dFixedReachEnvPixelGrey(mujoco_env.MujocoEnv, utils.EzPickle):
         # camera2_output =  np.fromstring(data, dtype='uint8').reshape(height, width, 3)[::-1, :, :]
         # return np.concatenate((self._render(mode="rgb_array"), camera2_output), axis = 2)
         obs = self._render(mode="rgb_array")
-        obs_grey = obs.mean(axis=2)[:,:,np.newaxis]
-        return np.transpose(obs_grey, axes=(2,1,0))
+        return obs.mean(axis=2)[:,:,np.newaxis]
+        # obs_grey = obs.mean(axis=2)[:,:,np.newaxis]
+        # return np.transpose(obs_grey, axes=(2,1,0))
 
     def reset_model(self):
         c = 0.01
@@ -474,7 +475,7 @@ class Box3dFixedReachHarderEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         ])
 
     def reset_model(self):
-        c = 0.01
+        c = 0.05
         qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
         self.set_state(
             qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
