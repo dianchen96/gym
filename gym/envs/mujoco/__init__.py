@@ -21,5 +21,5 @@ from gym.envs.mujoco.box3d import Box3dFixedReachEnvPixelGrey, \
 								  Box3dNoRewardEnv, \
 								  Box3dContactReachEnv, \
 								  Box3dFixedReachHarderEnv, \
-								  Box3dFixedReachMulObjEnv, \
-								  Box
+								  Box3dFixedReachHardestEnv, \
+								  Box3dFixedReachMulObjEnv

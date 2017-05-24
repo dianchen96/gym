@@ -27,7 +27,9 @@ class Box3dFixedReachEnvPixelGrey(mujoco_env.MujocoEnv, utils.EzPickle):
 
         # Check for distance
         d = self.unwrapped.data
-        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
+        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.075]))
+        # print d.qpos.flatten()
+        # print distance
         if distance <= 0.4:
             reach_reward += 2.0 - distance*3
         reward = reach_reward
@@ -49,8 +51,10 @@ class Box3dFixedReachEnvPixelGrey(mujoco_env.MujocoEnv, utils.EzPickle):
     def reset_model(self):
         c = 0.01
         qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
+        qpos[:7] += self.np_random.uniform(low=-c, high=c, size=7),
+        # qpos = self.init_qpos
         self.set_state(
-            qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
+            qpos,
             self.init_qvel,
         )
         return self._get_obs()
@@ -99,7 +103,8 @@ class Box3dFixedReachEnvPixelRGB(mujoco_env.MujocoEnv, utils.EzPickle):
 
         # Check for distance
         d = self.unwrapped.data
-        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
+        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.075]))
+        # print distance
         if distance <= 0.4:
             reach_reward += 2.0 - distance*3
         reward = reach_reward
@@ -119,8 +124,9 @@ class Box3dFixedReachEnvPixelRGB(mujoco_env.MujocoEnv, utils.EzPickle):
     def reset_model(self):
         c = 0.01
         qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
+        qpos[:7] += self.np_random.uniform(low=-c, high=c, size=7)
         self.set_state(
-            qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
+            qpos,
             self.init_qvel,
         )
         return self._get_obs()
@@ -438,7 +444,7 @@ class Box3dFixedReachEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
 class Box3dFixedReachHarderEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
-        mujoco_env.MujocoEnv.__init__(self, 'arm_claw_new.xml', 4)
+        mujoco_env.MujocoEnv.__init__(self, 'arm_claw_v4.xml', 4)
         utils.EzPickle.__init__(self)
         
 
@@ -459,7 +465,9 @@ class Box3dFixedReachHarderEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         #         # Small box is touched but not by table
         #         contact_reward = 1.0
         # print (d.site_xpos.flatten())
-        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
+        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.075]))
+        # print (distance)
+        # print (d.qpos.flatten())
         if distance <= 0.1:
             reach_reward += 1.0 - distance*3
 
@@ -475,10 +483,12 @@ class Box3dFixedReachHarderEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         ])
 
     def reset_model(self):
-        c = 0.05
+        c = 0.01
         qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
+        qpos[-2:] += self.np_random.uniform(low=-0.1, high=0.1, size=2)
+        qpos[:7] += self.np_random.uniform(low=-c, high=c, size=7)
         self.set_state(
-            qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
+            qpos,
             self.init_qvel,
         )
         return self._get_obs()
@@ -507,24 +517,25 @@ class Box3dFixedReachMulObjEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         obs = self._get_obs()
         done = False
         
-        reach_reward = 0.0
         contact_reward = 0.0
 
         # Check for distance
         d = self.unwrapped.data
-        # for coni in range(d.ncon):
-        #     con = d.obj.contact[coni]
-        #     if con.geom1 != 0 and con.geom2 == 12:
-        #         # Small box is touched but not by table
-        #         contact_reward = 1.0
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if con.geom1 != 0 and (con.geom2 == 4 or \
+                                   con.geom2 == 5 or \
+                                   con.geom2 == 6):
+                # Small box is touched but not by table
+                contact_reward = 1.0
         # print (d.site_xpos.flatten())
-        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
-        if distance <= 0.05:
-            reach_reward += 1.0 - distance*3
+        # distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
+        # if distance <= 0.05:
+        #     reach_reward += 1.0 - distance*3
 
-        reward = contact_reward + reach_reward
+        reward = 0.0
 
-        return obs, reward, done, dict(reach_reward=reach_reward, contact_reward=contact_reward)
+        return obs, reward, done, dict(contact_reward=contact_reward)
 
 
     def _get_obs(self):
@@ -534,14 +545,18 @@ class Box3dFixedReachMulObjEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         ])
 
     def reset_model(self):
-        c = 0.01
+        c = 0.1
         # qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
         qpos = self.init_qpos.copy()
-        qpos[7:9] += self.np_random.uniform(low=-0.05, high=0.05, size=2)
-        qpos[14:16] += self.np_random.uniform(low=-0.05, high=0.05, size=2)
-        qpos[21:23] += self.np_random.uniform(low=-0.05, high=0.05, size=2)
+
+        qpos[1] += 1.0
+        qpos[:7] += self.np_random.uniform(low=-0.1, high=0.1, size=7)
+        qpos[7:9] += self.np_random.uniform(low=-c, high=c, size=2)
+        qpos[14:16] += self.np_random.uniform(low=-c, high=c, size=2)
+        qpos[21:23] += self.np_random.uniform(low=-c, high=c, size=2)
+        
         self.set_state(
-            qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
+            qpos,
             self.init_qvel,
         )
         return self._get_obs()
@@ -561,7 +576,7 @@ class Box3dFixedReachMulObjEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
 class Box3dFixedReachHardestEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
-        mujoco_env.MujocoEnv.__init__(self, 'arm_claw_new.xml', 4)
+        mujoco_env.MujocoEnv.__init__(self, 'arm_claw_v5.xml', 4)
         utils.EzPickle.__init__(self)
         
 
@@ -582,7 +597,7 @@ class Box3dFixedReachHardestEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         #         # Small box is touched but not by table
         #         contact_reward = 1.0
         # print (d.site_xpos.flatten())
-        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
+        distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.075]))
         if distance <= 0.05:
             reach_reward += 1.0 - distance*3
 
@@ -600,8 +615,10 @@ class Box3dFixedReachHardestEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def reset_model(self):
         c = 0.01
         qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
+        qpos[:7] += self.np_random.uniform(low=-c, high=c, size=7),
+        qpos[-2:] += self.np_random.uniform(low=-0.1, high=0.1, size=2)
         self.set_state(
-            qpos + self.np_random.uniform(low=-c, high=c, size=self.model.nq),
+            qpos,
             self.init_qvel,
         )
         return self._get_obs()

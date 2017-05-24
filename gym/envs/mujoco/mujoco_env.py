@@ -112,7 +112,6 @@ class MujocoEnv(gym.Env):
                 self._get_viewer().finish()
                 self.viewer = None
             return
-
         if mode == 'rgb_array':
             self._get_viewer().render()
             data, width, height = self._get_viewer().get_image()
