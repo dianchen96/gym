@@ -270,6 +270,40 @@ register(
     max_episode_steps=200,
 )
 
+
+## V10: 6 boxes with small random init
+register(
+    id="Box3dReach-v10",
+    entry_point="gym.envs.mujoco:Box3dFixedReachMulMulObjConAvoidEnv",
+    max_episode_steps=1000,
+)
+
+## V9: 3 boxes with large random init
+
+register(
+    id="Box3dReach-v9",
+    entry_point="gym.envs.mujoco:Box3dFixedReachMulObjConAvoidMoreEnv",
+    max_episode_steps=1000,
+)
+
+## V8: 3 boxes with previous frame velocity as input
+
+register(
+    id="Box3dReach-v8",
+    entry_point="gym.envs.mujoco:Box3dFixedReachMulObjPrevVelEnv",
+    max_episode_steps=1000,
+)
+
+## V7: 3 boxes with contact checking
+
+register(
+    id="Box3dReach-v7",
+    entry_point="gym.envs.mujoco:Box3dFixedReachMulObjConAvoidEnv",
+    max_episode_steps=1000,
+)
+
+## V6: 3 boxes
+
 register(
     id="Box3dReach-v6",
     entry_point="gym.envs.mujoco:Box3dFixedReachMulObjEnv",

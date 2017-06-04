@@ -488,7 +488,7 @@ class Box3dFixedReachHarderEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         qpos[-2:] += self.np_random.uniform(low=-0.1, high=0.1, size=2)
         qpos[:7] += self.np_random.uniform(low=-c, high=c, size=7)
         self.set_state(
-            qpos,
+            np.array(qpos),
             self.init_qvel,
         )
         return self._get_obs()
@@ -556,7 +556,7 @@ class Box3dFixedReachMulObjEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         qpos[21:23] += self.np_random.uniform(low=-c, high=c, size=2)
         
         self.set_state(
-            qpos,
+            np.array(qpos),
             self.init_qvel,
         )
         return self._get_obs()
@@ -573,6 +573,339 @@ class Box3dFixedReachMulObjEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.viewer.cam.distance = self.model.stat.extent * 2.5
         self.viewer.cam.elevation = -40
 
+
+
+
+class Box3dFixedReachMulObjConAvoidEnv(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self):
+        mujoco_env.MujocoEnv.__init__(self, 'arm_reach_mul.xml', 4)
+        utils.EzPickle.__init__(self)
+        
+
+    def check_contact(self):
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if  (con.geom1 != 0 and \
+                 con.geom1 != 4 and \
+                 con.geom1 != 5 and \
+                 con.geom1 != 6) \
+            and (con.geom2 == 4 or \
+                 con.geom2 == 5 or \
+                 con.geom2 == 6):
+                # Small box is touched but not by table
+                return True
+        return False
+
+    def _step(self, a):
+        self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+        done = False
+        
+        contact_reward = 0.0
+
+        # Check for distance
+        if self.check_contact():
+            contact_reward = 1.0
+
+        reward = 0.0
+
+        return obs, reward, done, dict(contact_reward=contact_reward)
+
+    def reset_model(self):
+        c = 0.1
+        # qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
+        while True:
+            qpos = self.init_qpos.copy()
+
+            qpos[1] += 1.0
+            qpos[:7] += self.np_random.uniform(low=-0.1, high=0.1, size=7)
+            qpos[7:9] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[14:16] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[21:23] += self.np_random.uniform(low=-c, high=c, size=2)
+            
+            self.set_state(
+                np.array(qpos),
+                self.init_qvel,
+            )
+
+            if not self.check_contact():
+                break
+        return self._get_obs()
+
+    def _get_obs(self):
+        # return self.model.data.qpos.flat[:9]
+        return np.concatenate([
+           self.model.data.qpos.flat,
+           self.model.data.qvel.flat
+        ])
+
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 2.5
+        self.viewer.cam.elevation = -40
+
+
+
+
+
+class Box3dFixedReachMulMulObjConAvoidEnv(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self):
+        mujoco_env.MujocoEnv.__init__(self, 'arm_reach_mul_mul.xml', 4)
+        utils.EzPickle.__init__(self)
+        
+    def check_contact(self):
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if  (con.geom1 != 0 and \
+                 con.geom1 != 4 and \
+                 con.geom1 != 5 and \
+                 con.geom1 != 6 and \
+                 con.geom1 != 7 and \
+                 con.geom1 != 8 and \
+                 con.geom1 != 9) \
+            and (con.geom2 == 4 or \
+                 con.geom2 == 5 or \
+                 con.geom2 == 6 or \
+                 con.geom2 == 7 or \
+                 con.geom2 == 8 or \
+                 con.geom2 == 9):
+                # Small box is touched but not by table
+                return True
+        return False
+
+    def check_obj_contact(self):
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if  (con.geom1 == 4 or \
+                 con.geom1 == 5 or \
+                 con.geom1 == 6 or \
+                 con.geom1 == 7 or \
+                 con.geom1 == 8 or \
+                 con.geom1 == 9) \
+            and (con.geom2 == 4 or \
+                 con.geom2 == 5 or \
+                 con.geom2 == 6 or \
+                 con.geom2 == 7 or \
+                 con.geom2 == 8 or \
+                 con.geom2 == 9):
+                # Small box is touched but not by table
+                return True
+        return False
+
+    def _step(self, a):
+        self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+        done = False
+        
+        contact_reward = 0.0
+
+        # Check for distance
+        if self.check_contact():
+            contact_reward = 1.0
+
+        reward = 0.0
+
+        return obs, reward, done, dict(contact_reward=contact_reward)
+
+    def reset_model(self):
+        c = 0.2
+        # qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
+        while True:
+            qpos = self.init_qpos.copy()
+
+            qpos[1] += 1.0
+            qpos[:7] += self.np_random.uniform(low=-0.1, high=0.1, size=7)
+            qpos[7:9] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[14:16] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[21:23] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[28:30] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[35:37] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[42:44] += self.np_random.uniform(low=-c, high=c, size=2)
+
+            self.set_state(
+                np.array(qpos),
+                self.init_qvel,
+            )
+
+            if not self.check_obj_contact():
+                break
+        return self._get_obs()
+
+    def _get_obs(self):
+        # return self.model.data.qpos.flat[:9]
+        return np.concatenate([
+           self.model.data.qpos.flat,
+           self.model.data.qvel.flat
+        ])
+
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 2.5
+        self.viewer.cam.elevation = -40
+
+
+
+class Box3dFixedReachMulObjConAvoidMoreEnv(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self):
+        mujoco_env.MujocoEnv.__init__(self, 'arm_reach_mul.xml', 4)
+        utils.EzPickle.__init__(self)
+        
+    def check_reachable(self):
+        o = [0.15, 0]
+        qpos = self.init_qpos.copy()
+        dis1 = np.linalg.norm(qpos[7:9]-o)
+        dis2 = np.linalg.norm(qpos[14:16]-o)
+        dis3 = np.linalg.norm(qpos[21:23]-o)
+        dis = np.array([dis1, dis2, dis3])
+        return all(dis >= 0.55)
+
+    def check_contact(self):
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if  (con.geom1 != 0 and \
+                 con.geom1 != 4 and \
+                 con.geom1 != 5 and \
+                 con.geom1 != 6) \
+            and (con.geom2 == 4 or \
+                 con.geom2 == 5 or \
+                 con.geom2 == 6):
+                # Small box is touched but not by table
+                return True
+        return False
+
+    def check_obj_contact(self):
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if (con.geom1 == 4 or \
+                 con.geom1 == 5 or \
+                 con.geom1 == 6) \
+            and (con.geom2 == 4 or \
+                 con.geom2 == 5 or \
+                 con.geom2 == 6):
+                # Small box is touched but not by table
+                return True
+        return False
+
+    def _step(self, a):
+        self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+        done = False
+        
+        contact_reward = 0.0
+
+        # Check for distance
+        if self.check_contact():
+            contact_reward = 1.0
+
+        reward = 0.0
+
+        return obs, reward, done, dict(contact_reward=contact_reward)
+
+    def reset_model(self):
+        c = 0.2
+        # qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
+        while True:
+            qpos = self.init_qpos.copy()
+
+            qpos[1] += 1.0
+            qpos[:7] += self.np_random.uniform(low=-0.1, high=0.1, size=7)
+            qpos[7:9] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[14:16] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[21:23] += self.np_random.uniform(low=-c, high=c, size=2)
+            
+            self.set_state(
+                np.array(qpos),
+                self.init_qvel,
+            )
+
+            if not self.check_obj_contact():
+            # if True:
+                break
+        return self._get_obs()
+
+    def _get_obs(self):
+        # return self.model.data.qpos.flat[:9]
+        return np.concatenate([
+           self.model.data.qpos.flat,
+           self.model.data.qvel.flat
+        ])
+
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 2.5
+        self.viewer.cam.elevation = -40
+
+class Box3dFixedReachMulObjPrevVelEnv(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self):
+        mujoco_env.MujocoEnv.__init__(self, 'arm_reach_mul.xml', 4)
+        utils.EzPickle.__init__(self)
+        self.prev_vel = self.init_qvel.copy()
+
+
+    def _step(self, a):
+        self.prev_vel = self.model.data.qvel.copy()
+        self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+        done = False
+        
+        contact_reward = 0.0
+
+        # Check for distance
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if con.geom1 != 0 and (con.geom2 == 4 or \
+                                   con.geom2 == 5 or \
+                                   con.geom2 == 6):
+                # Small box is touched but not by table
+                contact_reward = 1.0
+        # print (d.site_xpos.flatten())
+        # distance = np.linalg.norm(d.site_xpos.flatten() - (list(d.qpos[-2:].flatten()) + [0.025]))
+        # if distance <= 0.05:
+        #     reach_reward += 1.0 - distance*3
+
+        reward = 0.0
+
+        return obs, reward, done, dict(contact_reward=contact_reward)
+
+    def reset_model(self):
+        c = 0.1
+        # qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
+        qpos = self.init_qpos.copy()
+
+        qpos[1] += 1.0
+        qpos[:7] += self.np_random.uniform(low=-0.1, high=0.1, size=7)
+        qpos[7:9] += self.np_random.uniform(low=-c, high=c, size=2)
+        qpos[14:16] += self.np_random.uniform(low=-c, high=c, size=2)
+        qpos[21:23] += self.np_random.uniform(low=-c, high=c, size=2)
+        
+        self.set_state(
+            np.array(qpos),
+            self.init_qvel,
+        )
+        self.prev_vel = self.init_qvel.copy()
+        return self._get_obs()
+
+    def _get_obs(self):
+        return np.concatenate([
+           self.model.data.qpos.flat,
+           self.model.data.qvel.flat,
+           self.prev_vel.flat
+        ])
+
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 2.5
+        self.viewer.cam.elevation = -40
 
 class Box3dFixedReachHardestEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
@@ -615,10 +948,10 @@ class Box3dFixedReachHardestEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def reset_model(self):
         c = 0.01
         qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
-        qpos[:7] += self.np_random.uniform(low=-c, high=c, size=7),
+        qpos[:7] += self.np_random.uniform(low=-c, high=c, size=7)
         qpos[-2:] += self.np_random.uniform(low=-0.1, high=0.1, size=2)
         self.set_state(
-            qpos,
+            np.array(qpos),
             self.init_qvel,
         )
         return self._get_obs()
