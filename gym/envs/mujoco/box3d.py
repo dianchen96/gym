@@ -586,10 +586,24 @@ class Box3dFixedReachMulObjConAvoidEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         d = self.unwrapped.data
         for coni in range(d.ncon):
             con = d.obj.contact[coni]
-            if  (con.geom1 != 0 and \
-                 con.geom1 != 4 and \
-                 con.geom1 != 5 and \
-                 con.geom1 != 6) \
+            if con.geom1 != 0 \
+            and con.geom1 != 4 \
+            and con.geom1 != 5 \
+            and con.geom1 != 6 \
+            and (con.geom2 == 4 or \
+                 con.geom2 == 5 or \
+                 con.geom2 == 6):
+                # Small box is touched but not by table
+                return True
+        return False
+
+    def check_obj_contact(self):
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if (con.geom1 == 4 or \
+                 con.geom1 == 5 or \
+                 con.geom1 == 6) \
             and (con.geom2 == 4 or \
                  con.geom2 == 5 or \
                  con.geom2 == 6):
@@ -630,7 +644,7 @@ class Box3dFixedReachMulObjConAvoidEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 self.init_qvel,
             )
 
-            if not self.check_contact():
+            if not self.check_obj_contact():
                 break
         return self._get_obs()
 
@@ -768,14 +782,15 @@ class Box3dFixedReachMulObjConAvoidMoreEnv(mujoco_env.MujocoEnv, utils.EzPickle)
         d = self.unwrapped.data
         for coni in range(d.ncon):
             con = d.obj.contact[coni]
-            if  (con.geom1 != 0 and \
-                 con.geom1 != 4 and \
-                 con.geom1 != 5 and \
-                 con.geom1 != 6) \
+            if con.geom1 != 0 \
+            and con.geom1 != 4 \
+            and con.geom1 != 5 \
+            and con.geom1 != 6 \
             and (con.geom2 == 4 or \
                  con.geom2 == 5 or \
                  con.geom2 == 6):
                 # Small box is touched but not by table
+                print (con.geom1, con.geom2)
                 return True
         return False
 
