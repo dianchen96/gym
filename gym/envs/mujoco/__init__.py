@@ -26,4 +26,5 @@ from gym.envs.mujoco.box3d import Box3dFixedReachEnvPixelGrey, \
 								  Box3dFixedReachMulObjConAvoidEnv, \
 								  Box3dFixedReachMulObjPrevVelEnv, \
 								  Box3dFixedReachMulObjConAvoidMoreEnv, \
-								  Box3dFixedReachMulMulObjConAvoidEnv
+								  Box3dFixedReachMulMulObjConAvoidEnv, \
+								  Box3dMulMulObjConAvoidPixelGreyEnv

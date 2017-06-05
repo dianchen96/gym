@@ -258,11 +258,15 @@ register(
 # Custom Mujoco
 # ----------------------------------------
 
+## V0: reach reward, grey
+
 register(
     id="Box3dReachPixel-v0",
     entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGrey",
     max_episode_steps=200,
 )
+
+## V1: reach reward, rgb
 
 register(
     id="Box3dReachPixel-v1",
@@ -270,15 +274,25 @@ register(
     max_episode_steps=200,
 )
 
+## V2: no reward, 6 boxes, grey
 
-## V10: 6 boxes with small random init
+register(
+    id="Box3dReachPixel-v2",
+    entry_point="gym.envs.mujoco:Box3dMulMulObjConAvoidPixelGreyEnv",
+    max_episode_steps=1000,
+)
+
+# ========= UP: PIXEL = ## = DOWN: STATE ======== #
+
+
+## V10: no reward, 6 boxes with small random init
 register(
     id="Box3dReach-v10",
     entry_point="gym.envs.mujoco:Box3dFixedReachMulMulObjConAvoidEnv",
     max_episode_steps=1000,
 )
 
-## V9: 3 boxes with large random init
+## V9: no reward, 3 boxes with large random init
 
 register(
     id="Box3dReach-v9",
@@ -286,7 +300,7 @@ register(
     max_episode_steps=1000,
 )
 
-## V8: 3 boxes with previous frame velocity as input
+## V8: no reward, 3 boxes with previous frame velocity as input
 
 register(
     id="Box3dReach-v8",
@@ -294,7 +308,7 @@ register(
     max_episode_steps=1000,
 )
 
-## V7: 3 boxes with contact checking
+## V7: no reward, 3 boxes with contact checking
 
 register(
     id="Box3dReach-v7",
@@ -302,7 +316,7 @@ register(
     max_episode_steps=1000,
 )
 
-## V6: 3 boxes
+## V6: no reward, 3 boxes
 
 register(
     id="Box3dReach-v6",

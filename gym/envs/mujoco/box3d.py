@@ -82,6 +82,106 @@ class Box3dFixedReachEnvPixelGrey(mujoco_env.MujocoEnv, utils.EzPickle):
         self.camera2.cam.lookat[2] += 0
         
         
+class Box3dMulMulObjConAvoidPixelGreyEnv(mujoco_env.MujocoPixelEnv, utils.EzPickle):
+    def __init__(self, width=42, height=42):
+        mujoco_env.MujocoPixelEnv.__init__(self, 'arm_reach_mul_mul.xml', 4, width, height, "grey")
+        utils.EzPickle.__init__(self)
+
+    def check_contact(self):
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if  (con.geom1 != 0 and \
+                 con.geom1 != 4 and \
+                 con.geom1 != 5 and \
+                 con.geom1 != 6 and \
+                 con.geom1 != 7 and \
+                 con.geom1 != 8 and \
+                 con.geom1 != 9) \
+            and (con.geom2 == 4 or \
+                 con.geom2 == 5 or \
+                 con.geom2 == 6 or \
+                 con.geom2 == 7 or \
+                 con.geom2 == 8 or \
+                 con.geom2 == 9):
+                # Small box is touched but not by table
+                return True
+        return False
+
+    def check_obj_contact(self):
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if  (con.geom1 == 4 or \
+                 con.geom1 == 5 or \
+                 con.geom1 == 6 or \
+                 con.geom1 == 7 or \
+                 con.geom1 == 8 or \
+                 con.geom1 == 9) \
+            and (con.geom2 == 4 or \
+                 con.geom2 == 5 or \
+                 con.geom2 == 6 or \
+                 con.geom2 == 7 or \
+                 con.geom2 == 8 or \
+                 con.geom2 == 9):
+                # Small box is touched but not by table
+                return True
+        return False
+
+    def _step(self, a):
+        self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+        done = False
+        
+        contact_reward = 0.0
+
+        # Check for distance
+        if self.check_contact():
+            contact_reward = 1.0
+
+        reward = 0.0
+
+        return obs, reward, done, dict(contact_reward=contact_reward)
+
+    def reset_model(self):
+        c = 0.2
+        # qpos = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005, -0.001, 0.007]
+        while True:
+            qpos = self.init_qpos.copy()
+            qpos[:7] = [0.000, 3.133, 0.018, -1.500, -0.004, -0.000, 0.005] + self.np_random.uniform(low=-0.1, high=0.1, size=7)
+            qpos[7:9] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[14:16] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[21:23] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[28:30] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[35:37] += self.np_random.uniform(low=-c, high=c, size=2)
+            qpos[42:44] += self.np_random.uniform(low=-c, high=c, size=2)
+
+            self.set_state(
+                np.array(qpos),
+                self.init_qvel,
+            )
+
+            if not self.check_obj_contact():
+                break
+        return self._get_obs()
+
+
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 2.5
+        self.viewer.cam.elevation = -40
+
+    def camera2_setup(self):
+        self.camera2.cam.trackbodyid = -1
+        self.camera2.cam.distance = self.model.stat.extent * 2.5*1.4
+        self.camera2.cam.elevation = -30
+        self.camera2.cam.lookat[0] += 0.4
+        self.camera2.cam.lookat[1] += 0.3
+        self.camera2.cam.lookat[2] += 0
+
+
+
 class Box3dFixedReachEnvPixelRGB(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self, width=42, height=42):
         self.width = width
@@ -790,7 +890,6 @@ class Box3dFixedReachMulObjConAvoidMoreEnv(mujoco_env.MujocoEnv, utils.EzPickle)
                  con.geom2 == 5 or \
                  con.geom2 == 6):
                 # Small box is touched but not by table
-                print (con.geom1, con.geom2)
                 return True
         return False
 
