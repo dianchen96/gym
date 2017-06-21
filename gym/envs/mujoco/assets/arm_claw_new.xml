@@ -77,10 +77,10 @@
 		
 		<!--  ================= OBJECT ================= /-->
 		<body name="small_object" pos="0.2 0 0.075">
-			<geom type="sphere" name="sphere" pos="-0.1 -0.1 0" size="0.4" rgba="0 0.3 0 0.2" user="1" contype="0" conaffinity="0"/>
+			<!-- <geom type="sphere" name="sphere" pos="-0.1 -0.1 0" size="0.4" rgba="0 0.3 0 0.2" user="1" contype="0" conaffinity="0"/> -->
 			<geom type="box" name="small_box" pos="-0.1 -0.1 0" size="0.025 0.025 0.025" rgba="0.5 0.6 0.8 1" user="1" contype="1" conaffinity="1"/>
-			<joint armature="0" axis="1 0 0" damping="0" name="target_x" stiffness="0" limited='false' type="slide"/>
-			<joint armature="0" axis="0 1 0" damping="0" name="target_y" stiffness="0" limited='false' type="slide"/>
+			<joint armature="0" axis="1 0 0" damping="0" name="target_x" stiffness="0" limited='false' type="slide" user="008"/>
+			<joint armature="0" axis="0 1 0" damping="0" name="target_y" stiffness="0" limited='false' type="slide" user="009"/>
 			<!-- <joint armature="0" axis="0 0 1" damping="0" name="target_z" stiffness="0" limited='false' type="slide"/> -->
 		</body>
 		<body name="large_object" pos="0.1 0 0.075">

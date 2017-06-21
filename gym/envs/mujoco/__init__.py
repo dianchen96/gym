@@ -14,6 +14,17 @@ from gym.envs.mujoco.humanoidstandup import HumanoidStandupEnv
 
 # Custom environment
 from gym.envs.mujoco.box3d import Box3dFixedReachEnvPixelGrey, \
+								  Box3dFixedReachEnvPixelGreyHarder, \
+								  Box3dFixedReachEnvPixelGreyHarderTwoCam, \
+								  Box3dFixedReachEnvPixelGreyHarderTwoCamMulAct, \
+								  Box3dFixedReachEnvPixelGreyMulMulContactTwoCamMulAct, \
+								  Box3dFixedReachEnvPixelGreyMulMulContactTwoCamMulActLess, \
+								  Box3dFixedReachEnvPixelGreyMulMulContactTwoCamMulActFusion, \
+								  Box3dFixedReachEnvPixelGreyHarderTwoCamMulActLess, \
+								  Box3dFixedReachEnvPixelGreyHarderTwoCamMulActLessRepeatTwo, \
+								  Box3dFixedReachEnvPixelGreyMulMulTwoCamMulAct, \
+								  Box3dFixedReachEnvPixelGreyMulMulTwoCamMulActLess, \
+								  Box3dFixedReachEnvPixelGreyHarderMulAct, \
 								  Box3dFixedReachEnvPixelRGB, \
 								  Box3dReachEnv, Box3dGraspEnv, \
 								  Box3dReachPosEnv, \

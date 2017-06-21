@@ -258,7 +258,7 @@ register(
 # Custom Mujoco
 # ----------------------------------------
 
-## V0: reach reward, grey
+## V0: reach reward 0.4, grey
 
 register(
     id="Box3dReachPixel-v0",
@@ -266,11 +266,11 @@ register(
     max_episode_steps=200,
 )
 
-## V1: reach reward, rgb
+## V1: reach reward 0.1, grey
 
 register(
     id="Box3dReachPixel-v1",
-    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelRGB",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyHarder",
     max_episode_steps=200,
 )
 
@@ -282,10 +282,93 @@ register(
     max_episode_steps=1000,
 )
 
+## V3: reach rew 0.1 with 4 obs
+
+register(
+    id="Box3dReachPixel-v3",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyHarderMulAct",
+    max_episode_steps=100,
+)
+
+## V4: Two cam, 1 box, 0.1 reward
+
+register(
+    id="Box3dReachPixel-v4",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyHarderTwoCam",
+    max_episode_steps=200,
+)
+
+## V5: Two cam, 1 box, 0.1 reward, 4 step
+
+register(
+    id="Box3dReachPixel-v5",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyHarderTwoCamMulAct",
+    max_episode_steps=200,
+)
+
+## V6: Two cam, 1 box, 0.1 reward, 2 step
+
+register(
+    id="Box3dReachPixel-v6",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyHarderTwoCamMulActLess",
+    max_episode_steps=200,
+)
+
+
+## V7: Two cam, 6 box, no reward, 2 step
+
+register(
+    id="Box3dReachPixel-v7",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyMulMulTwoCamMulActLess",
+    max_episode_steps=1000,
+)
+
+## V8: Two cam, 6 box, no reward, 4 step
+
+register(
+    id="Box3dReachPixel-v8",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyMulMulTwoCamMulAct",
+    max_episode_steps=1000,
+)
+
+## V9: Two cam, 6 box, contact reward, 2 step
+
+register(
+    id="Box3dReachPixel-v9",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyMulMulContactTwoCamMulActLess",
+    max_episode_steps=200,
+)
+
+## V10: Two cam, 1 box, reach reward, 4 step but 2 obs 
+
+register(
+    id="Box3dReachPixel-v10",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyHarderTwoCamMulActLessRepeatTwo",
+    max_episode_steps=200,
+)
+
+## V11: Two cam, 6 box, contact reward, 4 step
+
+register(
+    id="Box3dReachPixel-v11",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyMulMulContactTwoCamMulAct",
+    max_episode_steps=200,
+)
+
+## V12: Two cam, 6 box, contact reward, 4 step, env_info output joint pos (key: joint_pos)
+
+register(
+    id="Box3dReachPixel-v12",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyMulMulContactTwoCamMulActFusion",
+    max_episode_steps=200,
+)
+
 # ========= UP: PIXEL = ## = DOWN: STATE ======== #
 
 
+
 ## V10: no reward, 6 boxes with small random init
+
 register(
     id="Box3dReach-v10",
     entry_point="gym.envs.mujoco:Box3dFixedReachMulMulObjConAvoidEnv",
