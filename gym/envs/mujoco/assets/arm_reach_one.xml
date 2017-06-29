@@ -53,7 +53,7 @@
                 <geom name="tableTop" material="MatGnd" type="plane" pos="0.15 0 0.15" size="0.6 0.8 0.5" rgba=".6 .6 .5 1" contype="1" conaffinity="1"/>
                                                                         
                 <!--  ================= ARM ================= /-->
-                <body name="upperarm" pos="-0.15 0 0.6">
+                <body name="upperarm" pos="0.05 0.1 0.6">
                         <geom class="0" type="capsule" fromto="0 0 0 0 0 -0.345" size="0.05"/>
                         <joint class='arm' name="s_abduction" type="hinge" pos="0 0 0" limited='false' axis="1 0 0" user="001"/>
                         <joint class='arm' name="s_flexion" type="hinge" pos="0 0 0" limited='false' axis="0 -1 0" user="002"/>
@@ -62,37 +62,15 @@
                         <body name="forearm" pos="0 0 -0.36">
                                 <geom class="0" type="capsule" fromto="0 0 0 0.225 0 0" size="0.035"/>
                                 <joint class='arm' name="e_flexion" type="hinge" pos="0 0 0" limited='false' axis="0 -1 0" user="004"/>
-                                <joint class='arm' name="e_pronation" type="hinge" pos="0 0 0" limited='false' axis="-1 0 0" range="-1.5 1.57" user="005"/>
                         </body>
                         
                 </body>
                 
                 <!--  ================= OBJECT ================= /-->
-                <body name="a_object" pos="0.2 0.1 0.175">
-                        <geom density="1e4" type="box" name="a_box" pos="-0.1 -0.1 0" size="0.025 0.025 0.025" rgba="0.5 0.6 0.8 1" user="1" contype="0" conaffinity="1"/>
+                <body name="a_object" pos="0.05 0.1 0.2">
+                        <geom density="1e4" type="box" name="a_box" pos="-0.1 -0.1 0" size="0.05 0.05 0.05" rgba="0.5 0.6 0.8 1" user="1" contype="0" conaffinity="1"/>
                         <joint name="a_obj" type="free" limited='false' damping="0" armature="0"/>
                 </body>
-                <body name="b_object" pos="0.1 -0.2 0.2">
-                        <geom density="1e4" type="box" name="b_box" pos="-0.05 0.05 0" size="0.05 0.05 0.05" rgba="0.3 0.8 0.5 1" user="1" contype="1" conaffinity="1"/>
-                        <joint name="b_obj" type="free" limited='false' damping="0" armature="0"/>
-                </body>
-                <body name="c_object" pos="0.05 0.05 0.18">
-                        <geom density="1e4" type="box" name="c_box" pos="-0.05 0.05 0" size="0.03 0.03 0.03" rgba="0.8 0.3 0.5 1" user="1" contype="1" conaffinity="1"/>
-                        <joint name="c_obj" type="free" limited='false' damping="0" armature="0"/>
-                </body>
-                <body name="d_object" pos="0.1 0.05 0.18">
-                        <geom density="1e4" type="box" name="d_box" pos="-0.05 0.05 0" size="0.03 0.03 0.03" rgba="0.5 0.3 0.5 1" user="1" contype="1" conaffinity="1"/>
-                        <joint name="d_obj" type="free" limited='false' damping="0" armature="0"/>
-                </body>
-                <body name="e_object" pos="0.08 -0.15 0.18">
-                        <geom density="1e4" type="box" name="e_box" pos="-0.05 0.05 0" size="0.03 0.03 0.03" rgba="0.9 0.9 0.0 1" user="1" contype="1" conaffinity="1"/>
-                        <joint name="e_obj" type="free" limited='false' damping="0" armature="0"/>
-                </body>
-                <body name="f_object" pos="0.05 -0.05 0.175">
-                        <geom density="1e4" type="box" name="f_box" pos="-0.1 -0.1 0" size="0.025 0.025 0.025" rgba="0.0 0.6 0.6 1" user="1" contype="0" conaffinity="1"/>
-                        <joint name="f_obj" type="free" limited='false' damping="0" armature="0"/>
-                </body>
-        
         </worldbody>
         
         <actuator>
@@ -119,4 +97,3 @@
         </actuator>
 
 </mujoco>
- 

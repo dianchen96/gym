@@ -18,6 +18,7 @@ from gym.envs.mujoco.box3d import Box3dFixedReachEnvPixelGrey, \
 								  Box3dFixedReachEnvPixelGreyHarderTwoCam, \
 								  Box3dFixedReachEnvPixelGreyHarderTwoCamMulAct, \
 								  Box3dFixedReachEnvPixelGreyMulMulContactTwoCamMulAct, \
+								  Box3dFixedReachEnvPixelGreyMulMulContactTwoCamMulActNoMas, \
 								  Box3dFixedReachEnvPixelGreyMulMulContactTwoCamMulActLess, \
 								  Box3dFixedReachEnvPixelGreyMulMulContactTwoCamMulActFusion, \
 								  Box3dFixedReachEnvPixelGreyHarderTwoCamMulActLess, \
@@ -38,4 +39,5 @@ from gym.envs.mujoco.box3d import Box3dFixedReachEnvPixelGrey, \
 								  Box3dFixedReachMulObjPrevVelEnv, \
 								  Box3dFixedReachMulObjConAvoidMoreEnv, \
 								  Box3dFixedReachMulMulObjConAvoidEnv, \
+								  Box3dFixedReachMulMulObjConAvoidEnvOne, \
 								  Box3dMulMulObjConAvoidPixelGreyEnv

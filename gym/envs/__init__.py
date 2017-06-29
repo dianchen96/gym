@@ -363,16 +363,30 @@ register(
     max_episode_steps=200,
 )
 
+## V13: Two cam, 6 box, contact reward, 4 step, no mass for objects
+
+register(
+    id="Box3dReachPixel-v13",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyMulMulContactTwoCamMulActNoMas",
+    max_episode_steps=200,
+)
+
 # ========= UP: PIXEL = ## = DOWN: STATE ======== #
 
+## V11: contact reward, 1 box
 
+register(
+    id="Box3dReach-v11",
+    entry_point="gym.envs.mujoco:Box3dFixedReachMulMulObjConAvoidEnvOne",
+    max_episode_steps=200,
+)
 
 ## V10: no reward, 6 boxes with small random init
 
 register(
     id="Box3dReach-v10",
     entry_point="gym.envs.mujoco:Box3dFixedReachMulMulObjConAvoidEnv",
-    max_episode_steps=1000,
+    max_episode_steps=200,
 )
 
 ## V9: no reward, 3 boxes with large random init
