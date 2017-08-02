@@ -26,7 +26,7 @@
                         iterations="20"/>
         
         <asset>
-                <material name="MatGnd" specular=".3" shininess=".3" reflectance="0.3" rgba=".5 .55 .5 1"/>
+                <material name="MatGnd" specular=".3" shininess=".3" reflectance="0.0" rgba=".5 .55 .5 1"/>
         </asset>
         
         <default>
@@ -50,7 +50,7 @@
 
         <worldbody>
                 <light directional="true" cutoff="40" exponent="10" diffuse=".4 .4 .4" specular=".7 .7 .7" pos="0 0 1.5" dir="0 0 -1"/>
-                <geom name="tableTop" material="MatGnd" type="plane" pos="0.15 0 0.15" size="0.6 0.8 0.5" rgba=".6 .6 .5 1" contype="1" conaffinity="1"/>
+                <geom name="tableTop" material="MatGnd" type="plane" pos="0.15 0 0.15" size="0.8 0.8 0.5" rgba=".6 .6 .5 1" contype="1" conaffinity="1"/>
                                                                         
                 <!--  ================= ARM ================= /-->
                 <body name="upperarm" pos="0.05 0.1 0.6">
@@ -62,6 +62,7 @@
                         <body name="forearm" pos="0 0 -0.36">
                                 <geom class="0" type="capsule" fromto="0 0 0 0.225 0 0" size="0.035"/>
                                 <joint class='arm' name="e_flexion" type="hinge" pos="0 0 0" limited='false' axis="0 -1 0" user="004"/>
+                                <site name="end_effector" pos="0.225 0 0" size="0.001"/>
                         </body>
                         
                 </body>

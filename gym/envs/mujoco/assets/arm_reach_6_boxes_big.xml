@@ -64,6 +64,7 @@
 			<body name="forearm" pos="0 0 -0.36">
 				<geom class="0" type="capsule" fromto="0 0 0 0.275 0 0" size="0.035"/>
 				<joint class='arm' name="e_flexion" type="hinge" pos="0 0 0" limited='true' axis="0 -1 0" range="-1.5 1.05" user="004"/>
+				<site name="end_effector" pos="0.275 0 0" size="0.001"/>
 				<!--<joint class='arm' name="e_pronation" type="hinge" pos="0 0 0" limited='true' axis="-1 0 0" range="-1.5 1.57" user="005"/>-->
 					
 				<!--  ================= Palm ================= /-->
@@ -114,7 +115,7 @@
 		<motor joint='s_flexion' 	name='As_flexion' 	gear="100"/>
 		<motor joint='s_rotation' 	name='As_rotation' 	gear="100"/>
 		<motor joint='e_flexion' 	name='Ae_flexion' 	gear="70"/>
-		<!--<motor joint='e_pronation' 	name='Ae_pronation' gear="70"/>-->
+		<!-- <motor joint='e_pronation' 	name='Ae_pronation' gear="70"/> -->
 		<!-- <motor joint='w_abduction' 	name='Aw_abduction' gear="30"/> -->
 		<!-- <motor joint='w_flexion' 	name='Aw_flexion' 	gear="30"/> -->
 <!-- 		<motor joint='rc_close' 	name='Arc_close' 	gear="10"/>

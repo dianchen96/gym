@@ -95,6 +95,7 @@ class MujocoEnv(gym.Env):
         self.model.data.qpos = qpos
         self.model.data.qvel = qvel
         self.model._compute_subtree()  # pylint: disable=W0212
+        # import pdb; pdb.set_trace()
         self.model.forward()
 
     @property

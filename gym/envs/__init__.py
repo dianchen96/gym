@@ -355,6 +355,14 @@ register(
     max_episode_steps=200,
 )
 
+# V17: Two cam, 1 box, contact reward, 2 step
+
+register(
+    id="Box3dReachPixel-v17",
+    entry_point="gym.envs.mujoco:Box3dFixedReachEnvPixelGreyMulMulContactTwoCamAct",
+    max_episode_steps=200,
+)
+
 ## V12: Two cam, 6 box, contact reward, 4 step, env_info output joint pos (key: joint_pos)
 
 register(
@@ -371,7 +379,67 @@ register(
     max_episode_steps=200,
 )
 
+## V14: Two cam, 1 box, contact reward
+
+register(
+    id="Box3dReachPixel-v14",
+    entry_point="gym.envs.mujoco:Box3dFixedReachPixelMulMulObjConAvoidEnvOne",
+    max_episode_steps=200,
+)
+
+# V15: Two cam, 1 box, 0.4 reach reward, 4 step
+
+register(
+    id="Box3dReachPixel-v15",
+    entry_point="gym.envs.mujoco:Box3dFixedReachPixelMulMulObjConAvoidEnvOneEasy",
+    max_episode_steps=200,
+)
+
+# V16: Two cam, 1 box, 0.4 reach reward, 2 step
+
+register(
+    id="Box3dReachPixel-v16",
+    entry_point="gym.envs.mujoco:Box3dFixedReachPixelMulObjConAvoidEnvOneEasy",
+    max_episode_steps=200,
+)
+
+
 # ========= UP: PIXEL = ## = DOWN: STATE ======== #
+
+## V18: contact reward, 10 step
+
+register(
+    id="Box3dReach-v18",
+    entry_point="gym.envs.mujoco:Box3dFixedReachSixBoxEnvMulContactTwoCam10Step",
+    max_episode_steps=1000,
+)
+
+
+## V16: contact reward, no box velocities 
+
+register(
+    id="Box3dReach-v16",
+    entry_point="gym.envs.mujoco:Box3dFixedReachSixBoxEnvMulContactTwoCamNoBoxVel",
+    max_episode_steps=1000,
+)
+
+
+## V17: contact reward, 4 action repeat
+
+register(
+    id="Box3dReach-v17",
+    entry_point="gym.envs.mujoco:Box3dFixedReachSixBoxEnvMulContactTwoCam4Step",
+    max_episode_steps=1000,
+)
+
+
+## V12: contact reward 
+
+register(
+    id="Box3dReach-v12",
+    entry_point="gym.envs.mujoco:Box3dFixedReachSixBoxEnvMulContactTwoCam",
+    max_episode_steps=1000,
+)
 
 ## V11: contact reward, 1 box
 
@@ -386,7 +454,7 @@ register(
 register(
     id="Box3dReach-v10",
     entry_point="gym.envs.mujoco:Box3dFixedReachMulMulObjConAvoidEnv",
-    max_episode_steps=200,
+    max_episode_steps=1000,
 )
 
 ## V9: no reward, 3 boxes with large random init
@@ -420,6 +488,24 @@ register(
     entry_point="gym.envs.mujoco:Box3dFixedReachMulObjEnv",
     max_episode_steps=1000,
 )
+
+## test: 0.1 reach reward, 1 box, 10/4/2 step
+
+
+register(
+    id="Box3dReach-v13",
+    entry_point="gym.envs.mujoco:Box3dFixedReachHarderEnv4Step",
+    max_episode_steps=200,
+)
+
+register(
+    id="Box3dReach-v14",
+    entry_point="gym.envs.mujoco:Box3dFixedReachHarderEnv2Step",
+    max_episode_steps=200,
+)
+
+
+## V4: 0.1 reach reward, 1 box
 
 register(
     id="Box3dReach-v4",
