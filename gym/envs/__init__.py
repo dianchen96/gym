@@ -406,6 +406,21 @@ register(
 
 # ========= UP: PIXEL = ## = DOWN: STATE ======== #
 
+## one box pushing V0: Pushing fix init pos fix direction
+
+register(
+    id="Box3dPush-v1",
+    entry_point="gym.envs.mujoco:Box3dRescaledPushingEnv4Step",
+    max_episode_steps=100,
+)
+
+register(
+    id="Box3dPush-v0",
+    entry_point="gym.envs.mujoco:Box3dFixedPushingEnv4Step",
+    max_episode_steps=100,
+)
+
+
 ## V18: contact reward, 10 step
 
 register(
