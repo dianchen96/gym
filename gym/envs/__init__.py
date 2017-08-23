@@ -406,7 +406,28 @@ register(
 
 # ========= UP: PIXEL = ## = DOWN: STATE ======== #
 
-## one box pushing V0: Pushing fix init pos fix direction
+
+
+#v4, box init Pos fixed, goal pos change
+register(
+    id="Box3dPush-v4",
+    entry_point="gym.envs.mujoco:Box3dRescaledPushingEnv4StepReal",
+    max_episode_steps=100,
+)
+
+#v3, exactly the same compare to v2, no scaling process
+register(
+    id="Box3dPush-v3",
+    entry_point="gym.envs.mujoco:Box3dFixPushingEnv4StepReal",
+    max_episode_steps=100,
+)
+
+#Box push v2, try to make the env look similar to the real environment rescaled the box pos*10
+register(
+    id="Box3dPush-v2",
+    entry_point="gym.envs.mujoco:Box3dRescaledFixPushingEnv4StepReal",
+    max_episode_steps=100,
+)
 
 register(
     id="Box3dPush-v1",
@@ -414,9 +435,24 @@ register(
     max_episode_steps=100,
 )
 
+#since we need to reset the state, should use v0 to sample S_init S_goal pair and v1 run 
+#dynamic model planner
 register(
     id="Box3dPush-v0",
     entry_point="gym.envs.mujoco:Box3dFixedPushingEnv4Step",
+    max_episode_steps=100,
+)
+
+register(
+    id="Box3dReachTable-v0",
+    entry_point="gym.envs.mujoco:Box3dReachTableEnv4Step",
+    max_episode_steps=100,
+)
+
+#Box3dReachTable with joint limit
+register(
+    id="Box3dReachTable-v1",
+    entry_point="gym.envs.mujoco:Box3dReachTableEnv4StepWithLimit",
     max_episode_steps=100,
 )
 

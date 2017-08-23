@@ -52,4 +52,9 @@ from gym.envs.mujoco.box3d import Box3dFixedReachEnvPixelGrey, \
 								  Box3dFixedReachSixBoxEnvMulContactTwoCam4Step, \
 								  Box3dFixedReachSixBoxEnvMulContactTwoCam10Step, \
 								  Box3dFixedPushingEnv4Step, \
-								  Box3dRescaledPushingEnv4Step
+								  Box3dRescaledPushingEnv4Step, \
+								  Box3dReachTableEnv4Step, \
+								  Box3dReachTableEnv4StepWithLimit, \
+								  Box3dRescaledFixPushingEnv4StepReal, \
+								  Box3dFixPushingEnv4StepReal, \
+								  Box3dRescaledPushingEnv4StepReal

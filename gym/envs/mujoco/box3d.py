@@ -5,6 +5,303 @@ from gym.spaces.box import Box
 import mujoco_py.mjlib
 import math
 
+class Box3dReachTableEnv4StepWithLimit(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self):
+        mujoco_env.MujocoEnv.__init__(self, 'arm_reach_one_box_contact_free_with_limit.xml', 4)
+        utils.EzPickle.__init__(self)
+        
+
+    def _step(self, a):
+        for _ in range(4):
+            self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+
+        done = False
+        
+        
+        d = self.unwrapped.data
+        distance = np.linalg.norm(d.site_xpos.flatten() - list(d.qpos[4:7].flatten()))
+        reach_reward = -distance
+        # import pdb; pdb.set_trace()
+        #push reward is high if the box is moving in a certain direction
+        box_vel = d.qvel[4:7]
+        target_dir = [0,1,0]
+        push_reward = np.dot(box_vel.flatten(), target_dir)
+        push_reward = -np.abs(0.1 - push_reward)
+
+        reward =  reach_reward
+        # print(reward)
+        return obs, reward, done, {}
+
+    def reset_model(self):
+
+        qpos = self.init_qpos.copy()
+        qpos[0]+=(np.random.rand()*(2.27)-1.57)
+        qpos[1]+=(np.random.rand()*2.42 - 0.85)
+        qpos[2]+=(np.random.rand()*1.7 - 0.85)
+        qpos[3]+=(np.random.rand()*2.55 - 1.5)
+        qpos[5]+=0.1
+        qpos[4:6] += (np.random.rand(2)*0.7 - 0.35)
+        self.set_state(qpos, self.init_qvel)
+        
+        return self._get_obs()
+
+    def _get_obs(self):
+        # return self.model.data.qpos.flat[:9]
+        # import pdb; pdb.set_trace()
+        return np.concatenate([
+           self.model.data.qpos.flat,
+           self.model.data.qvel.flat
+        ])
+
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 4.0
+        self.viewer.cam.elevation = -40
+class Box3dReachTableEnv4Step(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self):
+        mujoco_env.MujocoEnv.__init__(self, 'arm_reach_one_box_contact_free.xml', 4)
+        utils.EzPickle.__init__(self)
+        
+
+    def _step(self, a):
+        for _ in range(4):
+            self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+
+        done = False
+        
+        
+        d = self.unwrapped.data
+        distance = np.linalg.norm(d.site_xpos.flatten() - list(d.qpos[4:7].flatten()))
+        reach_reward = -distance
+        # import pdb; pdb.set_trace()
+        #push reward is high if the box is moving in a certain direction
+        box_vel = d.qvel[4:7]
+        target_dir = [0,1,0]
+        push_reward = np.dot(box_vel.flatten(), target_dir)
+        push_reward = -np.abs(0.1 - push_reward)
+
+        reward =  reach_reward
+        return obs, reward, done, {}
+
+    def reset_model(self):
+
+        qpos = self.init_qpos.copy()
+        qpos[:4] = np.random.rand(4)*6.28
+        qpos[5]+=0.1
+        qpos[4:6] += (np.random.rand(2)*0.7 - 0.35)
+        self.set_state(qpos, self.init_qvel)
+        
+        return self._get_obs()
+
+    def _get_obs(self):
+        # return self.model.data.qpos.flat[:9]
+        # import pdb; pdb.set_trace()
+        return np.concatenate([
+           self.model.data.qpos.flat,
+           self.model.data.qvel.flat
+        ])
+
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 4.0
+        self.viewer.cam.elevation = -40
+
+class Box3dFixPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self):
+        self.goal = np.array([0.55,0.1])
+        mujoco_env.MujocoEnv.__init__(self, 'arm_reach_one_real.xml', 4)
+        utils.EzPickle.__init__(self)
+    def check_contact(self):
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if  (con.geom1 != 0) \
+            and (con.geom2 == 3):
+                # Small box is touched but not by table
+                return True
+        return False
+        
+    def _step(self, a):
+        for _ in range(4):
+            self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+
+        done = False
+        
+        
+        d = self.unwrapped.data
+        distance = np.linalg.norm(d.site_xpos.flatten() - list(d.qpos[4:7].flatten()))
+        reach_reward = -distance
+    
+        box_pos_x = d.qpos[4:6].flatten()
+        push_reward = -np.sum(np.square(box_pos_x - self.goal))*100
+        reward = push_reward
+        return obs, reward, done, {'contact':self.check_contact()}
+    def reset_model(self):
+
+        qpos = self.init_qpos.copy()
+        qpos[0]+=(np.random.rand()*(2.27)-1.57)
+        qpos[1]+=(np.random.rand()*2.42 - 0.85)
+        qpos[2]+=(np.random.rand()*1.7 - 0.85)
+        qpos[3]+=(np.random.rand()*2.55 - 1.5)
+        # qpos[4] += 0.5
+        self.set_state(qpos, self.init_qvel)
+    
+        return self._get_obs()
+
+    def _get_obs(self):
+        qpos = self.model.data.qpos.flat.copy()
+        qvel = self.model.data.qvel.flat.copy()
+        return np.concatenate([
+            qpos,
+            qvel
+        ])
+
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 4.0
+        self.viewer.cam.elevation = -40
+
+class Box3dRescaledFixPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self):
+        self.goal = np.array([0.55,0.1])
+        mujoco_env.MujocoEnv.__init__(self, 'arm_reach_one_real.xml', 4)
+        utils.EzPickle.__init__(self)
+    def check_contact(self):
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if  (con.geom1 != 0) \
+            and (con.geom2 == 3):
+                # Small box is touched but not by table
+                return True
+        return False
+        
+    def _step(self, a):
+        for _ in range(4):
+            self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+
+        done = False
+        
+        
+        d = self.unwrapped.data
+        distance = np.linalg.norm(d.site_xpos.flatten() - list(d.qpos[4:7].flatten()))
+        reach_reward = -distance
+    
+        box_pos_x = d.qpos[4:6].flatten()
+        push_reward = -np.sum(np.square(box_pos_x - self.goal))*100
+        reward = push_reward
+        return obs, reward, done, {'contact':self.check_contact()}
+    def reset_model(self):
+
+        qpos = self.init_qpos.copy()
+        qpos[0]+=(np.random.rand()*(2.27)-1.57)
+        qpos[1]+=(np.random.rand()*2.42 - 0.85)
+        qpos[2]+=(np.random.rand()*1.7 - 0.85)
+        qpos[3]+=(np.random.rand()*2.55 - 1.5)
+        # qpos[4] += 0.5
+        self.set_state(qpos, self.init_qvel)
+    
+        return self._get_obs()
+
+    def _get_obs(self):
+        qpos = self.model.data.qpos.flat.copy()
+        qvel = self.model.data.qvel.flat.copy()
+        qpos[4:7] = qpos[4:7]*10
+        return np.concatenate([
+            qpos,
+            qvel
+        ])
+
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 4.0
+        self.viewer.cam.elevation = -40
+        
+
+#Box is fixed, but the push direction changes.    
+class Box3dRescaledPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
+    def __init__(self):
+        self.goal = None
+        self.angle_list = [2*np.pi/20*i for i in range(20)]
+        angle = self.angle_list[np.random.randint(20)]
+        self.goal = np.array([0.4*np.cos(angle), 0.4*np.sin(angle)])
+        
+        mujoco_env.MujocoEnv.__init__(self, 'arm_reach_one_real.xml', 4)
+        utils.EzPickle.__init__(self)
+    def check_contact(self):
+        d = self.unwrapped.data
+        for coni in range(d.ncon):
+            con = d.obj.contact[coni]
+            if  (con.geom1 != 0) \
+            and (con.geom2 == 3):
+                # Small box is touched but not by table
+                return True
+        return False
+        
+    def _step(self, a):
+        for _ in range(4):
+            self.do_simulation(a, self.frame_skip)
+        
+        obs = self._get_obs()
+
+        done = False
+        
+        
+        d = self.unwrapped.data
+        # distance = np.linalg.norm(d.site_xpos.flatten() - list(d.qpos[4:7].flatten()))
+        # reach_reward = -distance
+    
+        box_pos_x = d.qpos[4:6].flatten()
+        push_reward = -np.sum(np.square(box_pos_x - self.goal))*100
+        
+        if self.check_contact():
+            push_reward += 0.2
+        reward = push_reward
+        return obs, reward, done, {'contact':self.check_contact()}
+    
+    def reset_model(self):
+        qpos = self.init_qpos.copy()
+        qpos[0]+=(np.random.rand()*(2.27)-1.57)
+        qpos[1]+=(np.random.rand()*2.42 - 0.85)
+        qpos[2]+=(np.random.rand()*1.7 - 0.85)
+        qpos[3]+=(np.random.rand()*2.55 - 1.5)
+        qpos[4] += 0.12
+        qpos[5] += 0.1
+        
+        #randomly select a goal, push distance always 0.3
+        angle = self.angle_list[np.random.randint(20)]
+        self.goal = np.array([0.4*np.cos(angle), 0.4*np.sin(angle)])
+        self.set_state(qpos, self.init_qvel)
+        return self._get_obs()
+
+    def _get_obs(self):
+        assert self.goal is not None
+        qpos = self.model.data.qpos.flat.copy()
+        qvel = self.model.data.qvel.flat.copy()
+        qpos[4:7] = qpos[4:7]*10
+        d = self.unwrapped.data
+        vector = d.site_xpos.flatten() - d.qpos[4:7].flatten()
+        return np.concatenate([
+            qpos,
+            qvel,
+            self.goal,
+            vector,
+        ])
+
+    def viewer_setup(self):
+        self.viewer.cam.trackbodyid = -1
+        self.viewer.cam.distance = self.model.stat.extent * 4.0
+        self.viewer.cam.elevation = -40
+        
+        
 class Box3dRescaledPushingEnv4Step(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
         self.goal = np.array([0,0])
@@ -32,14 +329,14 @@ class Box3dRescaledPushingEnv4Step(mujoco_env.MujocoEnv, utils.EzPickle):
         return obs, reward, done, {}
 
     def reset_model(self):
-        c = 0.05
+
         qpos = self.init_qpos.copy()
-        qpos[0] += 1.2
-        qpos[:4] += np.random.rand(4)*0.4 - 0.2
-        qpos[0] += np.random.rand()*2 - 1
-        qpos[4:6] += (np.random.rand(2)*0.4 - 0.2)
-        self.goal = qpos[4:6].copy()
-        self.goal[0] += 0.1
+        qpos[0]+=(np.random.rand()*(2.27)-1.57)
+        qpos[1]+=(np.random.rand()*2.42 - 0.85)
+        qpos[2]+=(np.random.rand()*1.7 - 0.85)
+        qpos[3]+=(np.random.rand()*2.55 - 1.5)
+        qpos[5]+=0.1
+        qpos[4:6] += (np.random.rand(2)*0.7 - 0.35)
         self.set_state(qpos, self.init_qvel)
         
         return self._get_obs()
@@ -47,8 +344,7 @@ class Box3dRescaledPushingEnv4Step(mujoco_env.MujocoEnv, utils.EzPickle):
     def _get_obs(self):
         qpos = self.model.data.qpos.flat.copy()
         qvel = self.model.data.qvel.flat.copy()
-        qpos[4:7] = qpos[4:7]*20
-        qvel[4:7] = qvel[4:7]*20
+        qpos[4:7] = qpos[4:7]*10
         return np.concatenate([
             qpos,
             qvel
@@ -61,7 +357,6 @@ class Box3dRescaledPushingEnv4Step(mujoco_env.MujocoEnv, utils.EzPickle):
 
 class Box3dFixedPushingEnv4Step(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
-        print("Since I want to standarize the test, I did change the range of the box.")
         mujoco_env.MujocoEnv.__init__(self, 'arm_reach_one.xml', 4)
         utils.EzPickle.__init__(self)
         
@@ -90,13 +385,12 @@ class Box3dFixedPushingEnv4Step(mujoco_env.MujocoEnv, utils.EzPickle):
         return obs, reward, done, {}
 
     def reset_model(self):
-        c = 0.05
+
         qpos = self.init_qpos.copy()
-        # qpos[0] += 1.2
-        qpos[:4] = np.random.rand(4)*6.28
-        
-        # qpos[0] += np.random.rand()*2 - 1
-        qpos[4]+=0.13
+        qpos[0]+=(np.random.rand()*(2.27)-1.57)
+        qpos[1]+=(np.random.rand()*2.42 - 0.85)
+        qpos[2]+=(np.random.rand()*1.7 - 0.85)
+        qpos[3]+=(np.random.rand()*2.55 - 1.5)
         qpos[5]+=0.1
         qpos[4:6] += (np.random.rand(2)*0.7 - 0.35)
         self.set_state(qpos, self.init_qvel)

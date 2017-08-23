@@ -23,7 +23,8 @@
         <option timestep="0.001"
                         gravity="0 0 -9.8"
                         viscosity="0"
-                        iterations="20"/>
+                        iterations="20"
+                        />
         
         <asset>
                 <material name="MatGnd" specular=".3" shininess=".3" reflectance="0.0" rgba=".5 .55 .5 1"/>
@@ -31,7 +32,7 @@
         
         <default>
                 <joint limited="true" damping="1" stiffness="0" armature=".1" user="0"/>
-                <geom solref="0.008 1" solimp="0.95 0.95 0.01" margin="0.001" user="0"/>
+                <geom solref="0.1 100" solimp="0.95 0.95 0.01" margin="0.001" user="0" condim="4"/>
                 <motor ctrllimited="true" ctrlrange="-1 1"/>
                 <position ctrllimited="true"/>
                 
@@ -50,7 +51,7 @@
 
         <worldbody>
                 <light directional="true" cutoff="40" exponent="10" diffuse=".4 .4 .4" specular=".7 .7 .7" pos="0 0 1.5" dir="0 0 -1"/>
-                <geom name="tableTop" material="MatGnd" type="plane" pos="0.15 0 0.15" size="0.8 0.8 0.5" rgba=".6 .6 .5 1" contype="1" conaffinity="1"/>
+                <geom solref="0.008 1" name="tableTop" material="MatGnd" type="plane" pos="0.15 0 0.15" size="0.8 0.8 0.5" rgba=".6 .6 .5 1" contype="1" conaffinity="1"/>
                                                                         
                 <!--  ================= ARM ================= /-->
                 <body name="upperarm" pos="0.05 0.1 0.6">
