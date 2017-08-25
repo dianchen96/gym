@@ -73,8 +73,12 @@
                         <geom density="5e4" type="box" name="a_box" pos="-0.1 -0.1 0" size="0.05 0.05 0.05" rgba="0.5 0.6 0.8 1" user="1" contype="0" conaffinity="1"/>
                         <joint name="a_obj" type="free" limited='false' damping="0" armature="0"/>
                 </body>
+                
+                
         </worldbody>
-        
+        <contact>
+                        <pair geom1="a_box" geom2="tableTop" solref = '0.008 1'/>
+        </contact>
         <actuator>
         
                 <!--  ================= Torque actuators ================= /-->
