@@ -424,6 +424,22 @@ register(
 
 #Box push v2, try to make the env look similar to the real environment rescaled the box pos*10
 register(
+    id="Box3dPush-v21",
+    entry_point="gym.envs.mujoco:Box3dRescaledFixPushingEnv4StepReal1",
+    max_episode_steps=100,
+)
+register(
+    id="Box3dPush-v22",
+    entry_point="gym.envs.mujoco:Box3dRescaledFixPushingEnv4StepReal2",
+    max_episode_steps=100,
+)
+register(
+    id="Box3dPush-v23",
+    entry_point="gym.envs.mujoco:Box3dRescaledFixPushingEnv4StepReal3",
+    max_episode_steps=100,
+)
+
+register(
     id="Box3dPush-v2",
     entry_point="gym.envs.mujoco:Box3dRescaledFixPushingEnv4StepReal",
     max_episode_steps=100,
