@@ -307,6 +307,28 @@ class Box3dRescaledFixPushingEnv4StepReal1(mujoco_env.MujocoEnv, utils.EzPickle)
                 return True
         return False
         
+    # def _step(self, a):
+    #     for _ in range(4):
+    #         self.do_simulation(a, self.frame_skip)
+        
+    #     obs = self._get_obs()
+
+    #     done = False
+        
+        
+    #     d = self.unwrapped.data
+    #     arm2box = d.qpos[4:7].flatten() - d.site_xpos.flatten()
+    #     goal2box = self.goal - d.qpos[4:7].flatten()
+    #     aline_reward = np.dot(arm2box.T, goal2box)/np.linalg.norm(arm2box)/np.linalg.norm(goal2box)
+    #     reach_reward = 0
+    #     if np.linalg.norm(arm2box) < 0.07:
+    #         reach_reward = 0.4
+    #     # import pdb; pdb.set_trace()
+    #     # print(alipoline_reward)
+    #     box_pos = d.qpos[4:7].flatten()
+    #     push_reward = -np.sum(np.square(box_pos - self.goal))*100
+    #     reward = push_reward + aline_reward + reach_reward
+        # print(self.check_contact())
     def _step(self, a):
         for _ in range(4):
             self.do_simulation(a, self.frame_skip)
@@ -317,18 +339,10 @@ class Box3dRescaledFixPushingEnv4StepReal1(mujoco_env.MujocoEnv, utils.EzPickle)
         
         
         d = self.unwrapped.data
-        arm2box = d.qpos[4:7].flatten() - d.site_xpos.flatten()
-        goal2box = self.goal - d.qpos[4:7].flatten()
-        aline_reward = np.dot(arm2box.T, goal2box)/np.linalg.norm(arm2box)/np.linalg.norm(goal2box)
-        reach_reward = 0
-        if np.linalg.norm(arm2box) < 0.07:
-            reach_reward = 0.4
-        # import pdb; pdb.set_trace()
-        # print(alipoline_reward)
-        box_pos = d.qpos[4:7].flatten()
-        push_reward = -np.sum(np.square(box_pos - self.goal))*100
-        reward = push_reward + aline_reward + reach_reward
-        # print(self.check_contact())
+        action_penalty = np.sum(np.square(a))
+        box_pos_x = d.qpos[4:7].flatten()
+        push_reward = -np.sum(np.square(box_pos_x - self.goal))*10
+        reward = push_reward - action_penalty*0.1
         return obs, reward, done, {'contact':self.check_contact()}
     def reset_model(self):
 

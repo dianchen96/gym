@@ -64,8 +64,22 @@
                                 <geom class="0" name="lower_arm" type="capsule" fromto="0 0 0 0.225 0 0" size="0.035"/>
                                 <joint class='arm' name="e_flexion" type="hinge" pos="0 0 0" axis="0 -1 0" range="-1.5 1.05" limited='true' user="004"/>
                                 <site name="end_effector" pos="0.225 0 0" size="0.001"/>
-                        </body>
                         
+                                <body name="claw" pos="0.27 0 0" quat="0 1 0 0">
+
+					<body name="rightclaw" pos=".005 -.01 0" >
+						<geom name="rightclaw_it" class="1" type="capsule" fromto="0 0 0.015 .03 -.02 0.015" 	size="0.005" />
+						<geom name="rightclaw_ib" class="1" type="capsule" fromto="0 0 -0.015 .03 -.02 -0.015" 	size="0.005" />
+					</body>
+
+					<body name="leftclaw" pos=".005 .01 0">
+						<geom name="leftclaw_it" class="1" type="capsule" fromto="0 0 0.015 .03 .02 0.015" 	size="0.005" />
+						<geom name="leftclaw_ib" class="1" type="capsule" fromto="0 0 -0.015 .03 .02 -0.015" 	size="0.005" />
+					</body>
+					
+				</body>
+                                
+                        </body>
                 </body>
                 
                 <!--  ================= OBJECT ================= /-->
