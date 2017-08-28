@@ -141,7 +141,7 @@ class Box3dFixPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
         box_pos_x = d.qpos[4:6].flatten()
         push_reward = -np.sum(np.square(box_pos_x - self.goal))*100
         reward = push_reward
-        # print(self.check_contact())
+        print(self.check_contact())
         return obs, reward, done, {'contact':self.check_contact()}
     def reset_model(self):
 
@@ -170,7 +170,7 @@ class Box3dFixPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
 
 class Box3dRescaledFixPushingEnv4StepReal3(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
-        self.goal = np.array([0.55,0.1])
+        self.goal = np.array([0.55,0.1, 0.2])
         mujoco_env.MujocoEnv.__init__(self, 'arm_reach_one_real3.xml', 4)
         utils.EzPickle.__init__(self)
     def check_contact(self):
@@ -193,10 +193,16 @@ class Box3dRescaledFixPushingEnv4StepReal3(mujoco_env.MujocoEnv, utils.EzPickle)
         
         
         d = self.unwrapped.data
+        #reward to ensure that end_effect box goal are in a line
+        box2hand = d.qpos[4:7] - d.site_xpos.flatten()
+        goal2box = self.goal - d.qpos[4:7]
+        
+        import pdb; pdb.set_trace()
+        aline_
         distance = np.linalg.norm(d.site_xpos.flatten() - list(d.qpos[4:7].flatten()))
         reach_reward = -distance
     
-        box_pos_x = d.qpos[4:6].flatten()
+        box_pos_x = d.qpos[4:7].flatten()
         push_reward = -np.sum(np.square(box_pos_x - self.goal))*100
         reward = push_reward
         # print(self.check_contact())
@@ -214,6 +220,7 @@ class Box3dRescaledFixPushingEnv4StepReal3(mujoco_env.MujocoEnv, utils.EzPickle)
         return self._get_obs()
 
     def _get_obs(self):
+        
         qpos = self.model.data.qpos.flat.copy()
         qvel = self.model.data.qvel.flat.copy()
         qpos[4:7] = qpos[4:7]*10
@@ -249,11 +256,9 @@ class Box3dRescaledFixPushingEnv4StepReal2(mujoco_env.MujocoEnv, utils.EzPickle)
         obs = self._get_obs()
 
         done = False
-        
-        
         d = self.unwrapped.data
-        distance = np.linalg.norm(d.site_xpos.flatten() - list(d.qpos[4:7].flatten()))
-        reach_reward = -distance
+        
+
     
         box_pos_x = d.qpos[4:6].flatten()
         push_reward = -np.sum(np.square(box_pos_x - self.goal))*100
@@ -275,7 +280,7 @@ class Box3dRescaledFixPushingEnv4StepReal2(mujoco_env.MujocoEnv, utils.EzPickle)
     def _get_obs(self):
         qpos = self.model.data.qpos.flat.copy()
         qvel = self.model.data.qvel.flat.copy()
-        qpos[4:7] = qpos[4:7]*10
+        qpos[4:6] = qpos[4:6]*10
         return np.concatenate([
             qpos,
             qvel
@@ -286,9 +291,10 @@ class Box3dRescaledFixPushingEnv4StepReal2(mujoco_env.MujocoEnv, utils.EzPickle)
         self.viewer.cam.distance = self.model.stat.extent * 4.0
         self.viewer.cam.elevation = -40
 
+#Box3dPush-v21 weaker arm, heavier box and 0.4 friction coefficent
 class Box3dRescaledFixPushingEnv4StepReal1(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
-        self.goal = np.array([0.55,0.1])
+        self.goal = np.array([0.55,0.1, 0.2])
         mujoco_env.MujocoEnv.__init__(self, 'arm_reach_one_real1.xml', 4)
         utils.EzPickle.__init__(self)
     def check_contact(self):
@@ -311,12 +317,17 @@ class Box3dRescaledFixPushingEnv4StepReal1(mujoco_env.MujocoEnv, utils.EzPickle)
         
         
         d = self.unwrapped.data
-        distance = np.linalg.norm(d.site_xpos.flatten() - list(d.qpos[4:7].flatten()))
-        reach_reward = -distance
-    
-        box_pos_x = d.qpos[4:6].flatten()
-        push_reward = -np.sum(np.square(box_pos_x - self.goal))*100
-        reward = push_reward
+        arm2box = d.qpos[4:7].flatten() - d.site_xpos.flatten()
+        goal2box = self.goal - d.qpos[4:7].flatten()
+        aline_reward = np.dot(arm2box.T, goal2box)/np.linalg.norm(arm2box)/np.linalg.norm(goal2box)
+        reach_reward = 0
+        if np.linalg.norm(arm2box) < 0.07:
+            reach_reward = 0.4
+        # import pdb; pdb.set_trace()
+        # print(alipoline_reward)
+        box_pos = d.qpos[4:7].flatten()
+        push_reward = -np.sum(np.square(box_pos - self.goal))*100
+        reward = push_reward + aline_reward + reach_reward
         # print(self.check_contact())
         return obs, reward, done, {'contact':self.check_contact()}
     def reset_model(self):
@@ -332,8 +343,11 @@ class Box3dRescaledFixPushingEnv4StepReal1(mujoco_env.MujocoEnv, utils.EzPickle)
         return self._get_obs()
 
     def _get_obs(self):
+        # position and velocity all relate to the arm end effect
+        # import pdb; pdb.set_trace()
         qpos = self.model.data.qpos.flat.copy()
         qvel = self.model.data.qvel.flat.copy()
+        
         qpos[4:7] = qpos[4:7]*10
         return np.concatenate([
             qpos,
@@ -345,12 +359,29 @@ class Box3dRescaledFixPushingEnv4StepReal1(mujoco_env.MujocoEnv, utils.EzPickle)
         self.viewer.cam.distance = self.model.stat.extent * 4.0
         self.viewer.cam.elevation = -40
         
-
+#box3dpush-v2 the only good policy we have right now
 class Box3dRescaledFixPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
         self.goal = np.array([0.55,0.1])
         mujoco_env.MujocoEnv.__init__(self, 'arm_reach_one_real.xml', 4)
         utils.EzPickle.__init__(self)
+        self.last_box_pos = None
+        self.last_site_pos = None
+    def get_invariant_obs(self):
+        d = self.unwrapped.data
+        site_xpos = d.site_xpos.flatten()
+        qpos = self.model.data.qpos.flat.copy()
+        qvel = self.model.data.qvel.flat.copy()
+        site_xvel = site_xpos - self.last_site_pos
+        box_xvel = qpos[4:7] - self.last_box_pos
+        box_vel2site_vel = box_xvel - site_xvel
+        arm2box = qpos[4:7] - site_xpos
+        qpos[4:7] = arm2box * 10
+        qvel[4:7] = box_vel2site_vel
+        #box orientation should be fine...
+        #Also add site xpos to observation
+        return np.concatenate([qpos, qvel, site_xpos])
+        
     def check_contact(self):
         d = self.unwrapped.data
         for coni in range(d.ncon):
@@ -387,8 +418,9 @@ class Box3dRescaledFixPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
         qpos[2]+=(np.random.rand()*1.7 - 0.85)
         qpos[3]+=(np.random.rand()*2.55 - 1.5)
         # qpos[4] += 0.5
+        self.last_box_pos = qpos[4:7]
         self.set_state(qpos, self.init_qvel)
-    
+        self.last_site_pos = self.unwrapped.data.site_xpos.flatten()
         return self._get_obs()
 
     def _get_obs(self):
@@ -405,8 +437,9 @@ class Box3dRescaledFixPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
         self.viewer.cam.distance = self.model.stat.extent * 4.0
         self.viewer.cam.elevation = -40
         
-
-#Box is fixed, but the push direction changes.    
+"""
+Box is fixed, but the push direction changes. 
+"""
 class Box3dRescaledPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
         self.goal = None
@@ -455,7 +488,7 @@ class Box3dRescaledPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
         qpos[3]+=(np.random.rand()*2.55 - 1.5)
         qpos[4] += 0.12
         qpos[5] += 0.1
-        
+        import pdb; pdb.set_trace()
         #randomly select a goal, push distance always 0.3
         angle = self.angle_list[np.random.randint(20)]
         self.goal = np.array([0.4*np.cos(angle), 0.4*np.sin(angle)])

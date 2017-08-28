@@ -61,7 +61,7 @@
 			<joint class='arm' name="s_rotation" type="hinge" pos="0 0 0" axis="0 0 1" range="-.85 .85" limited='true' user="003"/>
                                         
                         <body name="forearm" pos="0 0 -0.36">
-                                <geom class="0" type="capsule" fromto="0 0 0 0.225 0 0" size="0.035"/>
+                                <geom class="0" name="lower_arm" type="capsule" fromto="0 0 0 0.225 0 0" size="0.035"/>
                                 <joint class='arm' name="e_flexion" type="hinge" pos="0 0 0" axis="0 -1 0" range="-1.5 1.05" limited='true' user="004"/>
                                 <site name="end_effector" pos="0.225 0 0" size="0.001"/>
                         </body>
@@ -70,20 +70,21 @@
                 
                 <!--  ================= OBJECT ================= /-->
                 <body name="a_object" pos="0.05 0.1 0.2">
-                        <geom density="4e4" type="box" name="a_box" pos="-0.1 -0.1 0" size="0.05 0.05 0.05" rgba="0.5 0.6 0.8 1" user="1" contype="0" conaffinity="1"/>
+                        <geom friction="0.4 0.005 0.001" density="4e4" type="box" name="a_box" pos="-0.1 -0.1 0" size="0.05 0.05 0.05" rgba="0.5 0.6 0.8 1" user="1" contype="0" conaffinity="1"/>
                         <joint name="a_obj" type="free" limited='false' damping="0" armature="0"/>
                 </body>
         </worldbody>
         <contact>
                         <pair geom1="a_box" geom2="tableTop" solref = '0.008 1'/>
+                        <pair geom1="lower_arm" geom2="tableTop" solref = '0.008 1'/>
         </contact>
         <actuator>
         
                 <!--  ================= Torque actuators ================= /-->
-                <motor joint='s_abduction'      name='As_abduction' gear="100"/>
-                <motor joint='s_flexion'        name='As_flexion'       gear="100"/>
-                <motor joint='s_rotation'       name='As_rotation'      gear="100"/>
-                <motor joint='e_flexion'        name='Ae_flexion'       gear="70"/>
+                <motor joint='s_abduction'      name='As_abduction' gear="70"/>
+                <motor joint='s_flexion'        name='As_flexion'       gear="70"/>
+                <motor joint='s_rotation'       name='As_rotation'      gear="70"/>
+                <motor joint='e_flexion'        name='Ae_flexion'       gear="49"/>
 <!--            <motor joint='rc_close'         name='Arc_close'        gear="10"/>
                 <motor joint='lc_close'         name='Alc_close'        gear="10"/> -->
                 
