@@ -342,7 +342,7 @@ class Box3dRescaledFixPushingEnv4StepReal1(mujoco_env.MujocoEnv, utils.EzPickle)
         action_penalty = np.sum(np.square(a))
         box_pos_x = d.qpos[4:7].flatten()
         push_reward = -np.sum(np.square(box_pos_x - self.goal))*10
-        reward = push_reward - action_penalty*0.1
+        reward = push_reward - action_penalty*0.01
         return obs, reward, done, {'contact':self.check_contact()}
     def reset_model(self):
 
