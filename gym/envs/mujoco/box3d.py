@@ -377,10 +377,11 @@ class Box3dRescaledFixPushingEnv4StepReal1(mujoco_env.MujocoEnv, utils.EzPickle)
 class Box3dRescaledFixPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self):
         self.goal = np.array([0.55,0.1])
+        self.last_box_pos = np.array([0,0,0])
+        self.last_site_pos = np.array([0,0,0])
+        
         mujoco_env.MujocoEnv.__init__(self, 'arm_reach_one_real.xml', 4)
         utils.EzPickle.__init__(self)
-        self.last_box_pos = None
-        self.last_site_pos = None
     def get_invariant_obs(self):
         d = self.unwrapped.data
         site_xpos = d.site_xpos.flatten()
@@ -388,7 +389,10 @@ class Box3dRescaledFixPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
         qvel = self.model.data.qvel.flat.copy()
         site_xvel = site_xpos - self.last_site_pos
         box_xvel = qpos[4:7] - self.last_box_pos
-        box_vel2site_vel = box_xvel - site_xvel
+        #update last box and site position
+        self.last_site_pos = site_xpos
+        self.last_box_pos = qpos[4:7]
+        box_vel2site_vel = (box_xvel - site_xvel)/4.0
         arm2box = qpos[4:7] - site_xpos
         qpos[4:7] = arm2box * 10
         qvel[4:7] = box_vel2site_vel
@@ -422,8 +426,8 @@ class Box3dRescaledFixPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
         box_pos_x = d.qpos[4:6].flatten()
         push_reward = -np.sum(np.square(box_pos_x - self.goal))*100
         reward = push_reward
-        # print(self.check_contact())
-        return obs, reward, done, {'contact':self.check_contact()}
+        print(self.get_invariant_obs())
+        return obs, reward, done, {'contact':self.check_contact(), 'coordinate_transfered_obs':self.get_invariant_obs()}
     def reset_model(self):
 
         qpos = self.init_qpos.copy()
@@ -433,8 +437,8 @@ class Box3dRescaledFixPushingEnv4StepReal(mujoco_env.MujocoEnv, utils.EzPickle):
         qpos[3]+=(np.random.rand()*2.55 - 1.5)
         # qpos[4] += 0.5
         self.last_box_pos = qpos[4:7]
-        self.set_state(qpos, self.init_qvel)
         self.last_site_pos = self.unwrapped.data.site_xpos.flatten()
+        self.set_state(qpos, self.init_qvel)
         return self._get_obs()
 
     def _get_obs(self):
